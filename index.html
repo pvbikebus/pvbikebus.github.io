@@ -955,13 +955,8 @@ function selectRoute(routeId) {
     UPCOMING_DATES.forEach(dateStr => {
       const row = document.createElement('tr');
       const dateCell = document.createElement('td');
-
-      if (dateStr && !isNaN(Date.parse(dateStr))) {
-        const dateObj = new Date(dateStr);
-        dateCell.textContent = dateObj.toLocaleString();
-      } else {
-        dateCell.textContent = 'Invalid date';
-      }
+      
+      dateCell.textContent = dateStr
 
       row.appendChild(dateCell);
       tableBody.appendChild(row);
