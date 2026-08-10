@@ -607,6 +607,15 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
+  // ---- EDIT THIS ARRAY for your upcoming bike dates ----
+  const UPCOMING_DATES = [
+    "2026-09-02",
+    "2026-09-16",
+    "2026-10-07",
+    "2026-10-21",
+    "2026-11-04",
+    "2026-11-18"
+  ]
   // ---- EDIT THIS ARRAY to set your real routes and stops ----
   // Add or remove route objects for however many routes you have (2-4 is typical).
   // Coordinates below are placed around Prospect Valley Elementary, Wheat Ridge, CO.
@@ -935,46 +944,33 @@ function selectRoute(routeId) {
     selectRoute(ROUTES[0].id);
   }
 
-  /* Upcoming rides list: 1st + 3rd Wednesdays through May 20, 2027 */
+  /* Upcoming rides list */
   document.addEventListener('DOMContentLoaded', function () {
     const container = document.getElementById('upcoming-dates');
     if (!container) return;
 
-    fetch('config/upcoming_dates.json')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(upcoming_dates => {
-        const tableBody = document.querySelector('#upcoming-dates tbody');
-        tableBody.innerHTML = '';
+    const tableBody = document.querySelector('#upcoming-dates tbody');
+    tableBody.innerHTML = '';
 
-        if (!Array.isArray(data) || upcoming_dates.length === 0) {
-          document.getElementById('errorMsg').textContent = 'No dates found.';
-          return;
-        }
+    if (!Array.isArray(data) || upcoming_dates.length === 0) {
+      document.getElementById('errorMsg').textContent = 'No dates found.';
+      return;
+    }
 
-        data.dates.forEach(dateStr => {
-          const row = document.createElement('tr');
-          const dateCell = document.createElement('td');
+    UPCOMING_DATES.forEach(dateStr => {
+      const row = document.createElement('tr');
+      const dateCell = document.createElement('td');
 
-          if (dateStr && !isNaN(Date.parse(dateStr))) {
-            const dateObj = new Date(dateStr);
-            dateCell.textContent = dateObj.toLocaleString();
-          } else {
-            dateCell.textContent = 'Invalid date';
-          }
+      if (dateStr && !isNaN(Date.parse(dateStr))) {
+        const dateObj = new Date(dateStr);
+        dateCell.textContent = dateObj.toLocaleString();
+      } else {
+        dateCell.textContent = 'Invalid date';
+      }
 
-          row.appendChild(dateCell);
-          tableBody.appendChild(row);
-        });
-      })
-      .catch(error => {
-        console.error('Error loading JSON:', error);
-        document.getElementById('errorMsg').textContent = 'Error loading dates.';
-      })
+      row.appendChild(dateCell);
+      tableBody.appendChild(row);
+    });
   });
 </script>
 
