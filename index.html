@@ -952,11 +952,6 @@ function selectRoute(routeId) {
     const tableBody = document.querySelector('#upcoming-dates tbody');
     tableBody.innerHTML = '';
 
-    if (!Array.isArray(data) || upcoming_dates.length === 0) {
-      document.getElementById('errorMsg').textContent = 'No dates found.';
-      return;
-    }
-
     UPCOMING_DATES.forEach(dateStr => {
       const row = document.createElement('tr');
       const dateCell = document.createElement('td');
