@@ -936,90 +936,46 @@ function selectRoute(routeId) {
   }
 
   /* Upcoming rides list: 1st + 3rd Wednesdays through May 20, 2027 */
-  (function renderUpcomingDates() {
+  document.addEventListener('DOMContentLoaded', function () {
     const container = document.getElementById('upcoming-dates');
     if (!container) return;
 
-    const today = new Date();
-    today.setHours(0,0,0,0);
-
-    const schoolYearEnd = new Date(2027, 4, 20); // May 20, 2027 (month is 0-based)
-
-    // If the end date is before today, show a message and exit.
-    if (schoolYearEnd < today) {
-      container.innerHTML = '<div class="date-item">No scheduled rides — school year has ended.</div>';
-      return;
-    }
-
-    const dates = [];
-
-    // iterate months from current month up to end month inclusive
-    let year = today.getFullYear();
-    let month = today.getMonth();
-    const endYear = schoolYearEnd.getFullYear();
-    const endMonth = schoolYearEnd.getMonth();
-
-    function pushIfInRange(d) {
-      const dd = new Date(d.getFullYear(), d.getMonth(), d.getDate()); // ensure no time
-      if (dd >= today && dd <= schoolYearEnd) dates.push(dd);
-    }
-
-    while (year < endYear || (year === endYear && month <= endMonth)) {
-      // find first Wednesday (weekday 3)
-      let firstWed = null;
-      for (let d = 1; d <= 7; d++) {
-        const dt = new Date(year, month, d);
-        if (dt.getDay() === 3) {
-          firstWed = dt;
-          break;
+    fetch('config/upcoming_dates.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
-      }
-      if (firstWed) {
-        const thirdWed = new Date(year, month, firstWed.getDate() + 14);
-        pushIfInRange(firstWed);
-        pushIfInRange(thirdWed);
-      }
-      month++;
-      if (month > 11) {
-        month = 0;
-        year++;
-      }
-    }
+        return response.json();
+      })
+      .then(upcoming_dates => {
+        const tableBody = document.querySelector('#upcoming-dates tbody');
+        tableBody.innerHTML = '';
 
-    // sort ascending
-    dates.sort((a,b) => a - b);
+        if (!Array.isArray(data) || upcoming_dates.length === 0) {
+          document.getElementById('errorMsg').textContent = 'No dates found.';
+          return;
+        }
 
-    if (dates.length === 0) {
-      container.innerHTML = '<div class="date-item">No scheduled rides remaining this school year.</div>';
-      return;
-    }
+        data.dates.forEach(dateStr => {
+          const row = document.createElement('tr');
+          const dateCell = document.createElement('td');
 
-    // render items
-    container.innerHTML = '';
-    const options = { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' };
-    dates.forEach((dt, idx) => {
-      const item = document.createElement('div');
-      item.className = 'date-item';
-      item.setAttribute('role','listitem');
-      item.textContent = dt.toLocaleDateString(undefined, options);
+          if (dateStr && !isNaN(Date.parse(dateStr))) {
+            const dateObj = new Date(dateStr);
+            dateCell.textContent = dateObj.toLocaleString();
+          } else {
+            dateCell.textContent = 'Invalid date';
+          }
 
-      // mark today if it is exactly today (unlikely for Wed but useful)
-      const todayCopy = new Date();
-      todayCopy.setHours(0,0,0,0);
-      if (dt.getTime() === todayCopy.getTime()) item.classList.add('mark-today');
-
-      container.appendChild(item);
-    });
-
-    // scroll the list so the first upcoming date is at the top of the view
-    const firstIndex = dates.findIndex(d => d >= today);
-    if (firstIndex > 0 && container.children[firstIndex]) {
-      // smooth behavior may be preferable
-      container.children[firstIndex].scrollIntoView({ behavior: 'auto', block: 'start' });
-    } else {
-      container.scrollTop = 0;
-    }
-  })();
+          row.appendChild(dateCell);
+          tableBody.appendChild(row);
+        });
+      })
+      .catch(error => {
+        console.error('Error loading JSON:', error);
+        document.getElementById('errorMsg').textContent = 'Error loading dates.';
+      })
+  });
 </script>
 
 <section class="block">
@@ -1075,7 +1031,7 @@ function selectRoute(routeId) {
       <div class="row"><span>Final stop @ school</span><span>7:30 AM</span></div>
       <div class="dates-section" aria-hidden="false">
         <span class="mono">Upcoming rides</span>
-        <div id="upcoming-dates" class="dates-list" role="list" aria-label="Upcoming bike bus dates"></div>
+        <div id="upcoming-dates-list" class="dates-list" role="list" aria-label="Upcoming bike bus dates"></div>
       </div>
     </div>
     <div class="cta-row" style="margin-top:28px;">
@@ -1083,6 +1039,19 @@ function selectRoute(routeId) {
     </div>
   </div>
 </section>
+
+<h1>Upcoming Rides</h1>
+  <table id="upcoming-dates">
+    <thead>
+      <tr>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Dates will be inserted here -->
+    </tbody>
+  </table>
+  <p id="errorMsg" class="error"></p>
 
 <footer>
   <p>The Bike Bus at Prospect Valley Elementary · Volunteer-run</p>
