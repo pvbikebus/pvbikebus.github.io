@@ -3,22 +3,119 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Waiver — Prospect Valley Bike Bus</title>
+    <title>Rules of the Road — Prospect Valley Bike Bus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --sky: #CFE7EC;
+        --sky-deep: #A9D2DA;
+        --ink: #1C2B24;
+        --ink-soft: #445048;
+        --hivis: #D6F23C;
+        --hivis-deep: #9FB824;
+        --coral: #FF6A47;
+        --paper: #FBF9F2;
+        --max: 880px;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      body { background: var(--paper); color: var(--ink); font-family: 'Work Sans', sans-serif; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+      h1,h2,h3,.display { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.02em; line-height: 1.08; }
+      .mono { font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
+      a { color: inherit; }
+      .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+      :focus-visible { outline: 3px solid var(--coral); outline-offset: 3px; }
+
+      /* hero */
+      .hero { background: linear-gradient(180deg, var(--sky) 0%, var(--sky-deep) 100%); position: relative; overflow: hidden; padding: 56px 0 64px; }
+      .road-marking { position:absolute; top:0; left:0; right:0; height:10px; background-image: repeating-linear-gradient(90deg, var(--paper) 0 36px, transparent 36px 64px); opacity:0.9; }
+      .eyebrow { display:inline-block; font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; background:var(--ink); color:var(--hivis); padding:6px 12px; border-radius:3px; margin-bottom:18px; }
+      .hero h1 { font-size: clamp(30px, 7vw, 64px); color:var(--ink); max-width: 20ch; }
+      .hero-sub { margin-top: 12px; max-width: 46ch; font-size: 16px; color: var(--ink-soft); }
+      .cta-row { margin-top: 18px; display:flex; gap:12px; }
+      .btn { display:inline-flex; align-items:center; gap:8px; font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:0.04em; font-size:15px; font-weight:600; padding:12px 20px; border-radius:3px; text-decoration:none; border:2.5px solid var(--ink); transition: transform 0.15s ease; }
+      .btn-primary { background:var(--coral); color:var(--paper); border-color:var(--coral); }
+      .btn-ghost { background:transparent; color:var(--ink); }
+
+      /* section */
+      section.block { padding: 48px 0; border-bottom: 1.5px solid #E3DFD1; }
+      .kicker { font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; color:var(--hivis-deep); margin-bottom:10px; }
+      .block h2 { font-size: clamp(22px, 3.5vw, 36px); margin-bottom: 14px; }
+      p.lead { color:var(--ink-soft); font-size:15px; max-width:58ch; margin-bottom:18px; }
+
+      /* content lists */
+      .content-list { margin-top: 8px; }
+      .content-list ul { list-style: disc; padding-left: 20px; color:var(--ink); }
+      .content-list li { margin: 8px 0; color:var(--ink-soft); font-size:15px; }
+
+      /* details */
+      details { border-bottom: 1.5px solid #E3DFD1; padding: 12px 0; }
+      summary { cursor:pointer; font-family:'Oswald',sans-serif; text-transform:uppercase; font-size:16px; display:flex; justify-content:space-between; align-items:center; }
+      summary::after { content:"+"; font-size:20px; color:var(--coral); margin-left:12px; }
+      details[open] summary::after { content:"–"; }
+      details p { margin-top:12px; color:var(--ink-soft); font-size:15px; max-width:60ch; }
+
+      footer { padding: 28px 0; text-align:center; font-size:13px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; }
+    </style>
   </head>
   <body>
-    <h4>Rules of the Road</h4>
-    <ul>
-      <li>Stop at all stop signs, look both ways for cars before proceeding.</li>
-      <li>Stay behind the lead adults.</li>
-      <li>Wait to cross 32nd Ave until the lead volunteers say it’s OK, we cross as a group.</li>
-      <li>Bike on the right hand side of the road, in a straight line.</li>
-      <li>Helmets are strongly recommended.</li>
-    </ul>
-    <h4>Requirements</h4>
-    <ul>
-      <li>Kids 2nd grade and older that are confident riders that understand the rules of the road along with bike safety (stopping at stop signs, looking both ways before crossing streets and not crossing if there are cars present, riding on right side of the road) are welcome to be dropped off and ride with the group.</li>
-      <li>Kids in Kindergarten and 1st grade should have a parent ride next to them to ensure their safety.</li>
-      <li>To participate in the Bike Bus, you agree to our <a href="https://bputman.github.io/prospect-valley-bike-bus/waiver"><strong>terms and liability waiver.</strong></a></li>
-    </ul>
+    <header class="hero">
+      <div class="road-marking" aria-hidden="true"></div>
+      <div class="wrap">
+        <span class="eyebrow">Prospect Valley Bike Bus</span>
+        <h1>Rules of the Road</h1>
+        <p class="hero-sub">Guidelines for riders, volunteers, and caregivers to keep everyone safe while we ride together.</p>
+        <div class="cta-row">
+          <a class="btn btn-ghost" href="/">Home</a>
+          <a class="btn btn-primary" href="/waiver">Waiver</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="block">
+      <div class="wrap">
+        <p class="kicker">Safety first</p>
+        <h2>Basic rules for riders</h2>
+        <div class="content-list">
+          <ul>
+            <li>Stop at all stop signs and obey traffic controls; look both ways before proceeding.</li>
+            <li>Stay behind the lead adults and follow their instructions.</li>
+            <li>When crossing major roads (for example 32nd Ave), wait for lead volunteers and cross together as a group.</li>
+            <li>Ride on the right-hand side of the road in a single, straight line; do not weave.</li>
+            <li>Helmets are strongly recommended for all riders.</li>
+          </ul>
+        </div>
+
+        <h2 style="margin-top:20px">Participation requirements</h2>
+        <div class="content-list">
+          <ul>
+            <li>Kids in 2nd grade and older should be confident riders who understand basic road safety (stopping, looking, signaling).</li>
+            <li>Kindergarten and 1st grade riders should have a parent or guardian ride alongside them.</li>
+            <li>By participating you agree to our <a href="/waiver"><strong>terms and liability waiver</strong></a>.</li>
+          </ul>
+        </div>
+
+        <h2 style="margin-top:20px">Volunteer expectations</h2>
+        <div class="content-list">
+          <ul>
+            <li>Volunteers lead at the front and sweep at the back to keep the group together and safe.</li>
+            <li>Bring a basic repair kit and a mobile phone for emergencies when possible.</li>
+            <li>Keep an eye on safer-routing and slow down or stop for hazards.</li>
+          </ul>
+        </div>
+
+        <details style="margin-top:18px">
+          <summary>More details and common questions</summary>
+          <p>If you have specific accessibility needs, medical concerns, or questions about a route, contact the organizers before the ride so we can accommodate you safely.</p>
+        </details>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">
+        <p class="mono">© Prospect Valley Bike Bus</p>
+      </div>
+    </footer>
   </body>
 </html>
