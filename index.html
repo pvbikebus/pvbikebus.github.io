@@ -643,6 +643,14 @@
     lat: 39.763860,
     lng: -105.122474
   }
+  const SOUTH_SPUR_PATH = [
+    [39.757242, -105.118857], // south side of bridge
+    [39.757515, -105.119008], // cross over the bridge
+    [39.758274, -105.119893], // 29th Ave and Oak
+    [39.758279, -105.122571], // 29th and Pierson Way
+    [39.758922, -105.122843], // along Pierson
+    [39.7592128, -105.1236057] // Quail and Pierson
+  ]
 
   const south_route = {
     id: "south",
@@ -654,6 +662,8 @@
     // the coordinates, so the line hugs the actual road instead of
     // cutting straight across blocks.
     path: [
+      ...SOUTH_SPUR_PATH.toReversed(), // duplicate over the spur path
+      ...SOUTH_SPUR_PATH,       // duplicate over the spur path
       [39.755166, -105.123634], // Starting point
       [39.761841, -105.123608], // Turn right at 32nd Ave
       [39.761858, -105.122895], // Preparing to cross 32nd Ave
@@ -667,16 +677,24 @@
     stops: [
       {
         time: "Depart @ 7:25 AM",
-        title: "TODO - NEED VOLUNTEERS!",
+        title: "Starting Point #1",
         desc: "TODO",
         lat: 39.755166, 
         lng: -105.123634,
         start: true
       },
       {
+        time: "Depart @ 7:25 AM",
+        title: "Starting Point #2 - Temporarily on pause",
+        desc: "This spur is temporarily paused due to a bridge closure (<a href='https://www.wheatridge.gov/1956/Public-Works-Projects'>info here</a>). Please contact the City to express your interest in fixing this.",
+        lat: 39.757242, 
+        lng: -105.118857,
+        start: true
+      },
+      {
         time: "7:28 AM",
-        title: "TODO",
-        desc: "TODO",
+        title: "Stop 2",
+        desc: "Pause at 29th Ave/Pierson Way to join up with others!",
         lat: 39.7592128, 
         lng: -105.1236057
       },
