@@ -789,8 +789,11 @@
       // the coordinates, so the line hugs the actual road instead of
       // cutting straight across blocks.
       path: [
-        [39.762917, -105.114052], // Starting point
-        [39.765600, -105.115113], // Stop 2 — Bottom of the hill
+        [39.767460, -105.102066], // extended starting point; 37th Ave and Holland St
+        [39.762107, -105.102114], // 32nd and Holland
+        [39.762045, -105.113861], // 32nd and Miller
+        [39.762917, -105.114052], // 33rd and Miller
+        [39.765600, -105.115113], // Bottom of the hill Miller and 35th
         [39.765660, -105.117782], // Stop 3 — 4-way Stop sign
         [39.765552, -105.121453], // School is in sight
         [39.764568, -105.121484], // School entrance
@@ -799,12 +802,19 @@
       ],
       stops: [
         {
-          time: "Depart @ 7:25 AM",
-          title: "Starting point - 33rd Ave and Miller St",
+          time: "Depart @ 7:18 AM",
+          title: "Starting point - 37th Ave and Holland St",
           desc: "This is where the East route sets off.",
-          lat: 39.762917, 
-          lng: -105.114052,
+          lat: 39.767460, 
+          lng: -105.102066,
           start: true
+        },
+        {
+          time: "Depart @ 7:25 AM",
+          title: "33rd Ave and Miller St",
+          desc: "TODO",
+          lat: 39.762917, 
+          lng: -105.114052
         },
         {
           time: "7:28 AM",
