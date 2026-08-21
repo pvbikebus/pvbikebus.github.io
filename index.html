@@ -711,7 +711,7 @@
   };
   const west_route = {
     id: "west",
-    name: "Potential? West Route",
+    name: "West Route",
     color: "#DAB1DA", // purple
     // path = every point the LINE passes through, in order — starts out
     // matching the stops below. Add extra [lat, lng] points wherever the
@@ -720,10 +720,13 @@
     // cutting straight across blocks.
     path: [
       [39.762957, -105.133078], // Starting point
-      [39.762430, -105.133016], // turn left on 32nd Place
-      [39.762372, -105.129830], // Swadley and 32nd Place
-      [39.761964, -105.129930], // Turn left at 32nd Ave
-      [39.761995, -105.127110], // Turn left
+      [39.763980, -105.132533], // through the park
+      [39.764698, -105.131520], // through the park
+      [39.764838, -105.130734], // exit the park at 34th
+      [39.764838, -105.129659], // Entering the 34th Ave connector
+      [39.764798, -105.128563], // Exiting the 34th Ave connector
+      [39.761973, -105.128569], // 32nd Ave and Simms St.
+      [39.761986, -105.127117], // turn left on Routt
       [39.763718, -105.127069], // Cul-de-sac Routt
       [39.763788, -105.126454], // along connector path
       [39.763680, -105.126060], // 33rd Ave and Robb
@@ -735,7 +738,7 @@
     ],
     stops: [
       {
-        time: "Depart @ 7:25 AM",
+        time: "Depart @ 7:24 AM",
         title: "TODO - NEED VOLUNTEERS!",
         desc: "TODO",
         lat: 39.762957, 
@@ -746,18 +749,25 @@
         time: "7:27 AM",
         title: "TODO",
         desc: "TODO",
-        lat: 39.762372, 
-        lng: -105.129830
+        lat: 39.764838, 
+        lng: -105.129659
       },
       {
-        time: "7:30 AM",
+        time: "7:29 AM",
+        title: "TODO",
+        desc: "TODO",
+        lat: 39.761973,
+        lng: -105.128569
+      },
+      {
+        time: "7:31 AM",
         title: "TODO",
         desc: "TODO",
         lat: 39.763718,
         lng: -105.127069
       },
       {
-        time: "7:32 AM",
+        time: "7:33 AM",
         title: "TODO",
         desc: "TODO",
         lat: 39.763727,
