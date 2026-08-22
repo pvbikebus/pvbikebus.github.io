@@ -3,4 +3,4 @@ Homepage for the Prospect Valley Bike Bus in Wheat Ridge Colorado.
 
 Access the site hosted in GitHub Pages:
 
-https://bputman.github.io/prospect-valley-bike-bus/
+https://pvbikebus.github.io/pvbikebus
