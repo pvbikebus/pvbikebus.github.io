@@ -709,6 +709,21 @@
       SCHOOL_FINAL_STOP
     ]
   };
+
+  const WEST_WARD_SPUR = [
+    [39.765460, -105.137793], // 35th Ave and Ward
+    [39.765591, -105.130600], // turn right on connector path
+    [39.765186, -105.130578], // before crossing the bridge
+    [39.764846, -105.130228]  // after crossing the bridge
+  ]
+  const WEST_SIMMS_SPUR = [
+    [39.769966, -105.127355], // 38th Place and Routt
+    [39.769151, -105.127351], // after crossing 38th Ave
+    [39.769055, -105.129071], // turn left on Simms St
+    [39.766313, -105.129002], // along Simms St
+    [39.765675, -105.128572], // turn right on 35th Ave
+    [39.765591, -105.130600], // turn left on connector path
+  ]
   const west_route = {
     id: "west",
     name: "West Route",
@@ -719,8 +734,12 @@
     // the coordinates, so the line hugs the actual road instead of
     // cutting straight across blocks.
     path: [
-      [39.762957, -105.133078], // Starting point
-      [39.763980, -105.132533], // through the park
+      ...WEST_WARD_SPUR.toReversed(), // duplicate over the spur path
+      ...WEST_WARD_SPUR,       // duplicate over the spur path
+      ...WEST_SIMMS_SPUR.toReversed(), // duplicate over the spur path
+      ...WEST_SIMMS_SPUR,       // duplicate over the spur path
+      [39.762957, -105.133078], // Starting point #1
+      [39.764287, -105.132204], // park junction
       [39.764698, -105.131520], // through the park
       [39.764838, -105.130734], // exit the park at 34th
       [39.764838, -105.129659], // Entering the 34th Ave connector
@@ -739,11 +758,34 @@
     stops: [
       {
         time: "Depart @ 7:24 AM",
-        title: "TODO - NEED VOLUNTEERS!",
+        title: "Starting point #1",
         desc: "TODO",
         lat: 39.762957, 
         lng: -105.133078,
         start: true
+      },
+      {
+        time: "Depart @ 7:22 AM",
+        title: "Starting point #2 - NEED VOLUNTEERS!",
+        desc: "TODO",
+        lat: 39.765460, 
+        lng: -105.137793,
+        start: true
+      },
+      {
+        time: "Depart @ 7:21 AM",
+        title: "Starting point #3 - NEED VOLUNTEERS!",
+        desc: "TODO",
+        lat: 39.769966,
+        lng: -105.127355,
+        start: true
+      },
+      {
+        time: "7:25 AM",
+        title: "TODO",
+        desc: "TODO",
+        lat: 39.764287, 
+        lng: -105.132204
       },
       {
         time: "7:27 AM",
