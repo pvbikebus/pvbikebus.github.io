@@ -623,7 +623,7 @@
   // click the coordinates at the top of the menu to copy the exact lat/lng.
   const SCHOOL_IN_SITE_STOP = {
     time: "7:32 AM",
-    title: "Stop 4 - 35th Ave and Parfet St",
+    title: "Stop 4 - 35th Ave and Parfet",
     desc: "School is in sight - Join up with the other route. 👋 Hi there! ",
     lat: 39.765552,
     lng: -105.121453
@@ -638,8 +638,8 @@
   }
   const SCHOOL_SOUTH_LOT_STOP = {
     time: "7:33 AM",
-    title: "TODO",
-    desc: "TODO",
+    title: "South parking lot",
+    desc: "Hop off and walk bike alongside the parking lot",
     lat: 39.763860,
     lng: -105.122474
   }
@@ -669,7 +669,7 @@
       [39.761858, -105.122895], // Preparing to cross 32nd Ave
       [39.761994, -105.122889], // Done crossing 32nd Ave
       [39.761996, -105.122474], // Turn left
-      [39.763860, -105.122474], // School is in sight
+      [39.763860, -105.122474], // Into the south parking lot
       [39.764056, -105.122618], // School entrance
       [39.764419, -105.122399], // School plaza
       [39.764474, -105.122768]  // Final stop
@@ -677,15 +677,15 @@
     stops: [
       {
         time: "Depart @ 7:25 AM",
-        title: "Starting Point #1",
-        desc: "TODO",
+        title: "Starting Point #1 - 26th Place and Quail",
+        desc: "",
         lat: 39.755166, 
         lng: -105.123634,
         start: true
       },
       {
         time: "Depart @ 7:25 AM",
-        title: "Starting Point #2 - Temporarily on pause",
+        title: "Temporarily on pause! Starting Point #2 - Twilight Drive and Oak",
         desc: "This spur is temporarily paused due to a bridge closure (<a href='https://www.wheatridge.gov/1956/Public-Works-Projects' target='_blank' rel='noopener noreferrer'>info here</a>). Please contact the City to express your interest in fixing this.",
         lat: 39.757242, 
         lng: -105.118857,
@@ -693,15 +693,15 @@
       },
       {
         time: "7:28 AM",
-        title: "Stop 2",
-        desc: "Pause at 29th Ave/Pierson Way to join up with others!",
+        title: "29th Ave and Quail",
+        desc: "Pause here at 29th Ave/Pierson Way to join up with others!",
         lat: 39.7592128, 
         lng: -105.1236057
       },
       {
         time: "7:30 AM",
-        title: "TODO",
-        desc: "TODO",
+        title: "32nd Ave and Quail",
+        desc: "Turn right here",
         lat: 39.761841, 
         lng: -105.123608
       },
@@ -719,8 +719,8 @@
   const WEST_SIMMS_SPUR = [
     [39.769966, -105.127355], // 38th Place and Routt
     [39.769151, -105.127351], // after crossing 38th Ave
-    [39.769055, -105.129071], // turn left on Simms St
-    [39.766313, -105.129002], // along Simms St
+    [39.769055, -105.129071], // turn left on Simms
+    [39.766313, -105.129002], // along Simms
     [39.765675, -105.128572], // turn right on 35th Ave
     [39.765591, -105.130600], // turn left on connector path
     [39.765186, -105.130578], // before crossing the bridge
@@ -747,13 +747,14 @@
       ...WEST_SIMMS_SPUR,       // duplicate over the spur path
       [39.764838, -105.129659], // Entering the 34th Ave connector
       [39.764798, -105.128563], // Exiting the 34th Ave connector
-      [39.761973, -105.128569], // 32nd Ave and Simms St.
+      [39.761973, -105.128569], // 32nd Ave and Simms
       [39.761986, -105.127117], // turn left on Routt
       [39.763718, -105.127069], // Cul-de-sac Routt
       [39.763788, -105.126454], // along connector path
       [39.763680, -105.126060], // 33rd Ave and Robb
       [39.763727, -105.123676], // School is in sight 33rd Ave and Quail
       [39.763738, -105.122477], // crossing Quail
+      [39.763860, -105.122474], // Into the south parking lot
       [39.764055, -105.122624], // school entrance
       [39.764419, -105.122399], // School plaza
       [39.764474, -105.122768]  // Final stop
@@ -761,53 +762,53 @@
     stops: [
       {
         time: "Depart @ 7:24 AM",
-        title: "Starting point #1",
-        desc: "TODO",
+        title: "Starting point #1 - 38th Place and Routt",
+        desc: "",
         lat: 39.762957, 
         lng: -105.133078,
         start: true
       },
       {
         time: "Depart @ 7:23 AM",
-        title: "Starting point #2 - NEED VOLUNTEERS!",
-        desc: "TODO",
+        title: "NEED VOLUNTEERS! Starting point #2 - 35th Ave and Ward",
+        desc: "",
         lat: 39.765460, 
         lng: -105.137793,
         start: true
       },
       {
         time: "Depart @ 7:21 AM",
-        title: "Starting point #3 - NEED VOLUNTEERS!",
-        desc: "TODO",
+        title: "NEED VOLUNTEERS! Starting point #3 - 38th Place and Routt",
+        desc: "",
         lat: 39.769966,
         lng: -105.127355,
         start: true
       },
       {
         time: "7:27 AM",
-        title: "TODO",
-        desc: "TODO",
+        title: "34th Ave and Swadley",
+        desc: "The routes meetup! Everyone can gather before we take the connector path to Simms. ",
         lat: 39.764838, 
         lng: -105.129659
       },
       {
         time: "7:29 AM",
-        title: "TODO",
-        desc: "TODO",
+        title: "32nd Ave and Simms",
+        desc: "",
         lat: 39.761973,
         lng: -105.128569
       },
       {
         time: "7:31 AM",
-        title: "TODO",
-        desc: "TODO",
+        title: "Routt Street cul-de-sac",
+        desc: "Ready to take a connector path to Robb.",
         lat: 39.763718,
         lng: -105.127069
       },
       {
         time: "7:32 AM",
-        title: "TODO",
-        desc: "TODO",
+        title: "33rd Ave and Quail",
+        desc: "School is in site! Let's cross the street safely :)",
         lat: 39.763727,
         lng: -105.123676
       },
@@ -827,7 +828,7 @@
       // the coordinates, so the line hugs the actual road instead of
       // cutting straight across blocks.
       path: [
-        [39.767460, -105.102066], // extended starting point; 37th Ave and Holland St
+        [39.767460, -105.102066], // extended starting point; 37th Ave and Holland
         [39.762107, -105.102114], // 32nd and Holland
         [39.762045, -105.113861], // 32nd and Miller
         [39.762917, -105.114052], // 33rd and Miller
@@ -841,29 +842,29 @@
       stops: [
         {
           time: "Depart @ 7:18 AM",
-          title: "Starting point - 37th Ave and Holland St",
+          title: "Starting point - 37th Ave and Holland",
           desc: "This is where the East route sets off.",
           lat: 39.767460, 
           lng: -105.102066,
           start: true
         },
         {
-          time: "Depart @ 7:25 AM",
-          title: "33rd Ave and Miller St",
-          desc: "TODO",
+          time: "7:25 AM",
+          title: "33rd Ave and Miller",
+          desc: "",
           lat: 39.762917, 
           lng: -105.114052
         },
         {
           time: "7:28 AM",
-          title: "Stop 2 - 35th Ave and Miller St",
+          title: "35th Ave and Miller",
           desc: "Bottom of the hill - Please pause at the bottom of the hill to gather!",
           lat: 39.765600,
           lng: -105.115113
         },
         {
           time: "7:30 AM",
-          title: "Stop 3 - 35th Ave and Nelson St",
+          title: "35th Ave and Nelson",
           desc: "4-way Stop sign - Pause to check for vehicles and welcome joining riders!",
           lat: 39.765660,
           lng: -105.117782
@@ -889,7 +890,7 @@
       stops: [
         {
           time: "Depart @ 7:25 AM",
-          title: "Starting point - 41st Ave and Oak St",
+          title: "Starting point - 41st Ave and Oak",
           desc: "Where the North route gathers before heading out.",
           lat: 39.772871,
           lng: -105.119128,
@@ -897,14 +898,14 @@
         },
         {
           time: "7:27 AM",
-          title: "Stop 2 - 38th Place and Oak St",
+          title: "38th Place and Oak",
           desc: "➡️ Turn right here.",
           lat: 39.770241,
           lng: -105.119155
         },
         {
           time: "7:30 AM",
-          title: "Stop 3 - 38th Ave and Parfet St",
+          title: "38th Ave and Parfet",
           desc: "38th Ave Stoplight - Gather here before crossing.",
           lat: 39.769336,
           lng: -105.121481
