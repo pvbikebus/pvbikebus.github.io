@@ -723,6 +723,8 @@
     [39.766313, -105.129002], // along Simms St
     [39.765675, -105.128572], // turn right on 35th Ave
     [39.765591, -105.130600], // turn left on connector path
+    [39.765186, -105.130578], // before crossing the bridge
+    [39.764846, -105.130228]  // after crossing the bridge
   ]
   const west_route = {
     id: "west",
@@ -734,14 +736,15 @@
     // the coordinates, so the line hugs the actual road instead of
     // cutting straight across blocks.
     path: [
-      ...WEST_WARD_SPUR.toReversed(), // duplicate over the spur path
-      ...WEST_WARD_SPUR,       // duplicate over the spur path
-      ...WEST_SIMMS_SPUR.toReversed(), // duplicate over the spur path
-      ...WEST_SIMMS_SPUR,       // duplicate over the spur path
       [39.762957, -105.133078], // Starting point #1
       [39.764287, -105.132204], // park junction
       [39.764698, -105.131520], // through the park
       [39.764838, -105.130734], // exit the park at 34th
+      [39.764846, -105.130228], // bridge is to your left
+      ...WEST_WARD_SPUR.toReversed(), // duplicate over the spur path
+      ...WEST_WARD_SPUR,       // duplicate over the spur path
+      ...WEST_SIMMS_SPUR.toReversed(), // duplicate over the spur path
+      ...WEST_SIMMS_SPUR,       // duplicate over the spur path
       [39.764838, -105.129659], // Entering the 34th Ave connector
       [39.764798, -105.128563], // Exiting the 34th Ave connector
       [39.761973, -105.128569], // 32nd Ave and Simms St.
