@@ -878,7 +878,22 @@
       name: "North Route",
       color: "#2E7D32", // green
       path: [
-        [39.772871, -105.119128], // Starting point
+        [39.769547, -105.102523], // 38th Ave and Holland
+        [39.771464, -105.102544], // 39th Ave and Holland
+        [39.771432, -105.103762], // 39th Ave and Hoyt
+        [39.771160, -105.103833], // turn right on 39th Ave
+        [39.771156, -105.105491], // turn right on Independence Ct (optional)
+        [39.771088, -105.108802], // turn right on connector path
+        [39.771764, -105.108908], // turn left along connector path
+        [39.771222, -105.110167], // switchback
+        [39.771566, -105.109932], // along path
+        [39.771887, -105.110418], // safely cross through the parking lot!
+        [39.772901, -105.110410], // left turn along path
+        [39.772948, -105.110615], // right turn along path
+        [39.773420, -105.110623], // turn left on 41st Ave
+        [39.773408, -105.114416], // turn left onto connector path
+        [39.772936, -105.114423], // right turn along connector path
+        [39.772871, -105.119128], // 41st Ave and Oak
         [39.770241, -105.119155], // Stop 2
         [39.770165, -105.121477],
         [39.769336, -105.121481], // Stop 3 - Stoplight
@@ -889,8 +904,29 @@
       ],
       stops: [
         {
+          time: "Depart @ 7:12 AM",
+          title: "Starting point - 38th Ave and Holland",
+          desc: "Gathering for the East of Kipling.",
+          lat: 39.769547,
+          lng: -105.102523,
+          start: true
+        },
+        {
+          time: "7:15 AM",
+          title: "39th Ave and Independence Ct",
+          desc: "",
+          lat: 39.771156,
+          lng: -105.105491
+        },
+        {
+          time: "7:23 AM",
+          title: "41st Ave and Miller Ct",
+          desc: "",
+          lat: 39.772936,
+          lng: -105.115334
+        {
           time: "Depart @ 7:25 AM",
-          title: "Starting point - 41st Ave and Oak",
+          title: "41st Ave and Oak",
           desc: "Where the North route gathers before heading out.",
           lat: 39.772871,
           lng: -105.119128,
