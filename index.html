@@ -1,1242 +1,1024 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PV Elementary Bike Bus — Ride Together to School</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
-<style>
-  :root {
-    --sky: #CFE7EC;
-    --sky-deep: #A9D2DA;
-    --ink: #1C2B24;
-    --ink-soft: #445048;
-    --hivis: #D6F23C;
-    --hivis-deep: #9FB824;
-    --coral: #FF6A47;
-    --paper: #FBF9F2;
-    --line-w: 4px;
-    --max: 880px;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--paper);
-    color: var(--ink);
-    font-family: 'Work Sans', sans-serif;
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  h1, h2, h3, .display {
-    font-family: 'Oswald', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-    line-height: 1.08;
-  }
-
-  .mono {
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 600;
-  }
-
-  a { color: inherit; }
-
-  .wrap {
-    max-width: var(--max);
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-
-  :focus-visible {
-    outline: 3px solid var(--coral);
-    outline-offset: 3px;
-  }
-
-  /* ---------- HERO ---------- */
-  .hero {
-    background: linear-gradient(180deg, var(--sky) 0%, var(--sky-deep) 100%);
-    position: relative;
-    overflow: hidden;
-    padding: 72px 0 96px;
-  }
-
-  .road-marking {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 10px;
-    background-image: repeating-linear-gradient(
-      90deg, var(--paper) 0 36px, transparent 36px 64px
-    );
-    animation: roll 2.4s linear infinite;
-    opacity: 0.9;
-  }
-
-  @keyframes roll {
-    from { background-position: 0 0; }
-    to { background-position: -100px 0; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .road-marking { animation: none; }
-  }
-
-  .eyebrow {
-    display: inline-block;
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 600;
-    font-size: 13px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    background: var(--ink);
-    color: var(--hivis);
-    padding: 6px 12px;
-    border-radius: 3px;
-    margin-bottom: 22px;
-  }
-
-  .hero h1 {
-    font-size: clamp(44px, 8vw, 84px);
-    color: var(--ink);
-    max-width: 11ch;
-  }
-
-  .hero h1 span {
-    color: var(--paper);
-    -webkit-text-stroke: 2.5px var(--ink);
-    paint-order: stroke fill;
-  }
-
-  .hero-sub {
-    margin-top: 22px;
-    max-width: 46ch;
-    font-size: 18px;
-    color: var(--ink-soft);
-  }
-
-  .cta-row {
-    margin-top: 36px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'Oswald', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-size: 15px;
-    font-weight: 600;
-    padding: 15px 26px;
-    border-radius: 3px;
-    text-decoration: none;
-    border: 2.5px solid var(--ink);
-    transition: transform 0.15s ease;
-  }
-
-  .btn:hover { transform: translateY(-2px); }
-
-  .btn-primary {
-    background: var(--coral);
-    color: var(--paper);
-    border-color: var(--coral);
-  }
-
-  .btn-ghost {
-    background: transparent;
-    color: var(--ink);
-  }
-
-  /* ---------- SECTION SHELL ---------- */
-  section.block {
-    padding: 84px 0;
-    border-bottom: 1.5px solid #E3DFD1;
-  }
-
-  .kicker {
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 600;
-    font-size: 13px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--hivis-deep);
-    margin-bottom: 10px;
-  }
-
-  .block h2 {
-    font-size: clamp(28px, 4vw, 40px);
-    max-width: 20ch;
-    margin-bottom: 20px;
-  }
-
-  .block > .wrap > p.lead {
-    max-width: 58ch;
-    font-size: 17px;
-    color: var(--ink-soft);
-    margin-bottom: 44px;
-  }
-
-  /* ---------- WHAT IS IT: 3 cards ---------- */
-  .grid-3 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-  }
-
-  @media (max-width: 720px) {
-    .grid-3 { grid-template-columns: 1fr; }
-  }
-
-  .card {
-    background: var(--paper);
-    border: 2px solid var(--ink);
-    border-radius: 4px;
-    padding: 26px 22px;
-    box-shadow: 5px 5px 0 var(--hivis);
-  }
-
-  .card .num {
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--coral);
-    margin-bottom: 14px;
-  }
-
-  .card h3 {
-    font-size: 19px;
-    margin-bottom: 10px;
-  }
-
-  .card p {
-    font-size: 15px;
-    color: var(--ink-soft);
-  }
-
-  /* ---------- ROUTE / STOPS ---------- */
-  .route-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 18px;
-  }
-
-  .route-tab {
-    font-family: 'Oswald', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 10px 18px;
-    border-radius: 3px;
-    border: 2.5px solid var(--ink);
-    background: transparent;
-    color: var(--ink);
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: transform 0.12s ease;
-  }
-
-  .route-tab:hover { transform: translateY(-1px); }
-
-  .route-tab .dot {
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    border: 2px solid var(--ink);
-    flex-shrink: 0;
-  }
-
-  .route-tab.active {
-    background: var(--ink);
-    color: var(--paper);
-  }
-
-  #route-map {
-    height: 380px;
-    width: 100%;
-    border: 2px solid var(--ink);
-    border-radius: 4px;
-    margin-bottom: 40px;
-    background: var(--sky);
-  }
-
-  .route-heading {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-
-  .route-heading .dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 3px solid var(--ink);
-    flex-shrink: 0;
-  }
-
-  .route-heading h3 {
-    font-size: 18px;
-  }
-
-  .leaflet-popup-content-wrapper {
-    border-radius: 4px;
-    font-family: 'Work Sans', sans-serif;
-  }
-
-  .leaflet-popup-content { margin: 12px 14px; }
-
-  .popup-time {
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 600;
-    font-size: 12px;
-    color: #FF6A47;
-    display: block;
-    margin-bottom: 2px;
-  }
-
-  .popup-title {
-    font-family: 'Oswald', sans-serif;
-    text-transform: uppercase;
-    font-size: 15px;
-    display: block;
-    margin-bottom: 4px;
-  }
-
-  .popup-desc {
-    font-size: 13px;
-    color: var(--ink-soft);
-  }
-
-  .stop-marker {
-    border: 3px solid var(--ink);
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-  }
-
-  .stop-marker.final {
-    width: 24px;
-    height: 24px;
-    border-width: 4px;
-  }
-
-  .route {
-    position: relative;
-    padding-left: 40px;
-  }
-
-  .route::before {
-    content: "";
-    position: absolute;
-    left: 9px;
-    top: 6px;
-    bottom: 6px;
-    width: var(--line-w);
-    background-image: repeating-linear-gradient(
-      180deg, var(--ink) 0 14px, transparent 14px 24px
-    );
-  }
-
-  .stop {
-    position: relative;
-    padding-bottom: 40px;
-  }
-
-  .stop:last-child { padding-bottom: 0; }
-
-  .stop::before {
-    content: "";
-    position: absolute;
-    left: -40px;
-    top: 2px;
-    width: 22px;
-    height: 22px;
-    background: var(--hivis);
-    border: 3px solid var(--ink);
-    border-radius: 50%;
-  }
-
-  .stop-time {
-    font-size: 14px;
-    color: var(--coral);
-    margin-bottom: 4px;
-  }
-
-  .stop h3 {
-    font-size: 20px;
-    margin-bottom: 6px;
-  }
-
-  .stop p {
-    font-size: 15px;
-    color: var(--ink-soft);
-    max-width: 50ch;
-  }
-
-  .stop.final::before {
-    background: var(--coral);
-  }
-
-  /* ---------- GEAR GRID ---------- */
-  .grid-4 {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
-  }
-
-  @media (max-width: 720px) {
-    .grid-4 { grid-template-columns: repeat(2, 1fr); }
-  }
-
-  .gear-item {
-    text-align: left;
-    padding: 20px 16px;
-    background: var(--sky);
-    border-radius: 4px;
-  }
-
-  .gear-item .mono {
-    display: block;
-    font-size: 12px;
-    color: var(--ink-soft);
-    margin-bottom: 8px;
-  }
-
-  .gear-item strong {
-    display: block;
-    font-family: 'Oswald', sans-serif;
-    text-transform: uppercase;
-    font-size: 15px;
-    letter-spacing: 0.02em;
-  }
-
-  /* ---------- JOIN ---------- */
-  .join {
-    background: var(--ink);
-    color: var(--paper);
-  }
-
-  .join .kicker { color: var(--hivis); }
-
-  .join h2 { color: var(--paper); }
-
-  .join p.lead { color: #C7CFC9; }
-
-  .join-box {
-    background: var(--paper);
-    color: var(--ink);
-    border-radius: 6px;
-    padding: 32px;
-    display: grid;
-    gap: 18px;
-    max-width: 520px;
-  }
-
-  .join-box .row {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    border-bottom: 1px solid #E3DFD1;
-    padding-bottom: 14px;
-    font-size: 15px;
-  }
-
-  .join-box .row:last-of-type { border-bottom: none; padding-bottom: 0; }
-
-  .join-box .row span:first-child {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    letter-spacing: 0.05em;
-  }
-
-  /* Upcoming dates */
-  .dates-section {
-    margin-top: 8px;
-  }
-
-  .dates-section .mono {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 12px;
-    color: var(--ink-soft);
-  }
-
-  .dates-list {
-    max-height: 240px; /* roughly 5 items at ~48px each */
-    overflow-y: auto;
-    padding-right: 8px; /* room for scrollbar */
-    border-top: 1px solid #E3DFD1;
-    margin-top: 6px;
-  }
-
-  .date-item {
-    padding: 10px 0;
-    border-bottom: 1px dashed #E3DFD1;
-    font-size: 15px;
-    color: var(--ink);
-  }
-
-  .date-item.mark-today {
-    font-weight: 600;
-    color: var(--coral);
-  }
-
-  /* ---------- FAQ ---------- */
-  details {
-    border-bottom: 1.5px solid #E3DFD1;
-    padding: 18px 0;
-  }
-
-  summary {
-    cursor: pointer;
-    font-family: 'Oswald', sans-serif;
-    text-transform: uppercase;
-    font-size: 16px;
-    letter-spacing: 0.02em;
-    list-style: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  summary::-webkit-details-marker { display: none; }
-
-  summary::after {
-    content: "+";
-    font-size: 22px;
-    color: var(--coral);
-    margin-left: 12px;
-  }
-
-  details[open] summary::after { content: "–"; }
-
-  details p {
-    margin-top: 12px;
-    color: var(--ink-soft);
-    font-size: 15px;
-    max-width: 60ch;
-  }
-
-  /* ---------- FOOTER ---------- */
-  footer {
-    padding: 40px 0;
-    text-align: center;
-    font-size: 13px;
-    color: var(--ink-soft);
-    font-family: 'IBM Plex Mono', monospace;
-  }
-
-  .edit-flag {
-    background: var(--hivis);
-    color: var(--ink);
-    padding: 1px 5px;
-    border-radius: 2px;
-    font-weight: 600;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PV Elementary Bike Bus — Ride Together to School</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <style>
+    :root {
+      --sky: #CFE7EC;
+      --sky-deep: #A9D2DA;
+      --ink: #1C2B24;
+      --ink-soft: #445048;
+      --hivis: #D6F23C;
+      --hivis-deep: #9FB824;
+      --coral: #FF6A47;
+      --paper: #FBF9F2;
+      --line-w: 4px;
+      --max: 880px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Work Sans', sans-serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, .display {
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      line-height: 1.08;
+    }
+
+    .mono {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+    }
+
+    a { color: inherit; }
+
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--coral);
+      outline-offset: 3px;
+    }
+
+    /* ---------- HERO ---------- */
+    .hero {
+      background: linear-gradient(180deg, var(--sky) 0%, var(--sky-deep) 100%);
+      position: relative;
+      overflow: hidden;
+      padding: 72px 0 96px;
+    }
+
+    .road-marking {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 10px;
+      background-image: repeating-linear-gradient(
+        90deg, var(--paper) 0 36px, transparent 36px 64px
+      );
+      animation: roll 2.4s linear infinite;
+      opacity: 0.9;
+    }
+
+    @keyframes roll {
+      from { background-position: 0 0; }
+      to { background-position: -100px 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .road-marking { animation: none; }
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: var(--ink);
+      color: var(--hivis);
+      padding: 6px 12px;
+      border-radius: 3px;
+      margin-bottom: 22px;
+    }
+
+    .hero h1 {
+      font-size: clamp(44px, 8vw, 84px);
+      color: var(--ink);
+      max-width: 11ch;
+    }
+
+    .hero h1 span {
+      color: var(--paper);
+      -webkit-text-stroke: 2.5px var(--ink);
+      paint-order: stroke fill;
+    }
+
+    .hero-sub {
+      margin-top: 22px;
+      max-width: 46ch;
+      font-size: 18px;
+      color: var(--ink-soft);
+    }
+
+    .cta-row {
+      margin-top: 36px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 15px 26px;
+      border-radius: 3px;
+      text-decoration: none;
+      border: 2.5px solid var(--ink);
+      transition: transform 0.15s ease;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-primary {
+      background: var(--coral);
+      color: var(--paper);
+      border-color: var(--coral);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--ink);
+    }
+
+    /* ---------- SECTION SHELL ---------- */
+    section.block {
+      padding: 84px 0;
+      border-bottom: 1.5px solid #E3DFD1;
+    }
+
+    .kicker {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--hivis-deep);
+      margin-bottom: 10px;
+    }
+
+    .block h2 {
+      font-size: clamp(28px, 4vw, 40px);
+      max-width: 20ch;
+      margin-bottom: 20px;
+    }
+
+    .block > .wrap > p.lead {
+      max-width: 58ch;
+      font-size: 17px;
+      color: var(--ink-soft);
+      margin-bottom: 44px;
+    }
+
+    /* ---------- WHAT IS IT: 3 cards ---------- */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 720px) {
+      .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--paper);
+      border: 2px solid var(--ink);
+      border-radius: 4px;
+      padding: 26px 22px;
+      box-shadow: 5px 5px 0 var(--hivis);
+    }
+
+    .card .num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--coral);
+      margin-bottom: 14px;
+    }
+
+    .card h3 {
+      font-size: 19px;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 15px;
+      color: var(--ink-soft);
+    }
+
+    /* ---------- ROUTE / STOPS ---------- */
+    .route-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .route-tab {
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 3px;
+      border: 2.5px solid var(--ink);
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.12s ease;
+    }
+
+    .route-tab:hover { transform: translateY(-1px); }
+
+    .route-tab .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 2px solid var(--ink);
+      flex-shrink: 0;
+    }
+
+    .route-tab.active {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    #route-map {
+      height: 380px;
+      width: 100%;
+      border: 2px solid var(--ink);
+      border-radius: 4px;
+      margin-bottom: 40px;
+      background: var(--sky);
+    }
+
+    .route-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .route-heading .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 3px solid var(--ink);
+      flex-shrink: 0;
+    }
+
+    .route-heading h3 {
+      font-size: 18px;
+    }
+
+    .leaflet-popup-content-wrapper {
+      border-radius: 4px;
+      font-family: 'Work Sans', sans-serif;
+    }
+
+    .leaflet-popup-content { margin: 12px 14px; }
+
+    .popup-time {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      font-size: 12px;
+      color: #FF6A47;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .popup-title {
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+      font-size: 15px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .popup-desc {
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+
+    .stop-marker {
+      border: 3px solid var(--ink);
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      box-sizing: border-box;
+      position: relative;
+      background: var(--hivis);
+    }
+
+    .stop-marker.start {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      transform: rotate(45deg);
+      box-shadow: 0 0 0 3px rgba(28,43,36,0.2);
+    }
+
+    .stop-marker.final {
+      width: 28px;
+      height: 28px;
+      border-width: 4px;
+      box-shadow: 0 0 0 3px rgba(28,43,36,0.15);
+    }
+
+    .route {
+      position: relative;
+      padding-left: 40px;
+    }
+
+    .route::before {
+      content: "";
+      position: absolute;
+      left: 9px;
+      top: 6px;
+      bottom: 6px;
+      width: var(--line-w);
+      background-image: repeating-linear-gradient(
+        180deg, var(--ink) 0 14px, transparent 14px 24px
+      );
+    }
+
+    .stop {
+      position: relative;
+      padding-bottom: 40px;
+    }
+
+    .stop:last-child { padding-bottom: 0; }
+
+    .stop::before {
+      content: "";
+      position: absolute;
+      left: -40px;
+      top: 2px;
+      width: 22px;
+      height: 22px;
+      background: var(--hivis);
+      border: 3px solid var(--ink);
+      border-radius: 50%;
+    }
+
+    .stop-time {
+      font-size: 14px;
+      color: var(--coral);
+      margin-bottom: 4px;
+    }
+
+    .stop h3 {
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    .stop p {
+      font-size: 15px;
+      color: var(--ink-soft);
+      max-width: 50ch;
+    }
+
+    .stop.final::before {
+      background: var(--coral);
+    }
+
+    /* ---------- GEAR GRID ---------- */
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 720px) {
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .gear-item {
+      text-align: left;
+      padding: 20px 16px;
+      background: var(--sky);
+      border-radius: 4px;
+    }
+
+    .gear-item .mono {
+      display: block;
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin-bottom: 8px;
+    }
+
+    .gear-item strong {
+      display: block;
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ---------- JOIN ---------- */
+    .join {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .join .kicker { color: var(--hivis); }
+
+    .join h2 { color: var(--paper); }
+
+    .join p.lead { color: #C7CFC9; }
+
+    .join-box {
+      background: var(--paper);
+      color: var(--ink);
+      border-radius: 6px;
+      padding: 32px;
+      display: grid;
+      gap: 18px;
+      max-width: 520px;
+    }
+
+    .join-box .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid #E3DFD1;
+      padding-bottom: 14px;
+      font-size: 15px;
+    }
+
+    .join-box .row:last-of-type { border-bottom: none; padding-bottom: 0; }
+
+    .join-box .row span:first-child {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      letter-spacing: 0.05em;
+    }
+
+    /* Upcoming dates */
+    .dates-section {
+      margin-top: 8px;
+    }
+
+    .dates-section .mono {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+
+    .dates-list {
+      max-height: 240px;
+      overflow-y: auto;
+      padding-right: 8px;
+      border-top: 1px solid #E3DFD1;
+      margin-top: 6px;
+    }
+
+    .date-item {
+      padding: 10px 0;
+      border-bottom: 1px dashed #E3DFD1;
+      font-size: 15px;
+      color: var(--ink);
+    }
+
+    .date-item.mark-today {
+      font-weight: 600;
+      color: var(--coral);
+    }
+
+    /* ---------- FAQ ---------- */
+    details {
+      border-bottom: 1.5px solid #E3DFD1;
+      padding: 18px 0;
+    }
+
+    summary {
+      cursor: pointer;
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+      font-size: 16px;
+      letter-spacing: 0.02em;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+
+    summary::after {
+      content: "+";
+      font-size: 22px;
+      color: var(--coral);
+      margin-left: 12px;
+    }
+
+    details[open] summary::after { content: "–"; }
+
+    details p {
+      margin-top: 12px;
+      color: var(--ink-soft);
+      font-size: 15px;
+      max-width: 60ch;
+    }
+
+    /* ---------- FOOTER ---------- */
+    footer {
+      padding: 40px 0;
+      text-align: center;
+      font-size: 13px;
+      color: var(--ink-soft);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .edit-flag {
+      background: var(--hivis);
+      color: var(--ink);
+      padding: 1px 5px;
+      border-radius: 2px;
+      font-weight: 600;
+    }
+  </style>
 </head>
 <body>
-
-<header class="hero">
-  <div class="road-marking" aria-hidden="true"></div>
-  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-  <div class="wrap">
-    <!-- <img src="https://resources.finalsite.net/images/f_auto,q_auto/v1710496702/jeffcopublicschoolsorg/dvaglschvirfxvrs7fqn/ProspectValleyElementarySchoolPrimaryLogoImage.png" alt="PV logo" w[...] -->
-    <span class="eyebrow">1st and 3rd Wednesday mornings of every month</span>
-    <h1>The PV bike bus is <span>rolling</span></h1>
-    <p class="hero-sub">A group of neighborhood kids and grown-ups riding bikes to school together, on a set route, at a set time. Safer than riding alone, way more fun than the car line.</p>
-    <div class="cta-row">
-      <a class="btn btn-primary" href="#join">Join the ride</a>
-      <a class="btn btn-ghost" href="#route">See the route</a>
-    </div>
-  </div>
-</header>
-
-<section class="block">
-  <div class="wrap">
-    <p class="kicker">What it is</p>
-    <h2>Just like a school bus - except everybody's rolling</h2>
-    <p class="lead">Riders join in along a fixed route at set stops, and we all ride in together as a group, led by volunteers. We've got morning commutes from every direction; pick one closest to you!</p>
-    <div class="grid-3">
-      <div class="card">
-        <p class="num">01</p>
-        <h3>Safety in numbers</h3>
-        <p>Riding as a visible group is safer than riding solo — drivers see us coming, and adult volunteers ride at the front and back.</p>
-      </div>
-      <div class="card">
-        <p class="num">02</p>
-        <h3>Skip the car line</h3>
-        <p>No idling, no parking scramble. Kids roll straight up to the bike rack, wide awake and ready for the day.</p>
-      </div>
-      <div class="card">
-        <p class="num">03</p>
-        <h3>Genuinely fun</h3>
-        <p>Music, bubbles, decorated bikes, and friends the whole way. Most kids ask to ride again the next day.</p>
+  <header class="hero">
+    <div class="road-marking" aria-hidden="true"></div>
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    <div class="wrap">
+      <span class="eyebrow">1st and 3rd Wednesday mornings of every month</span>
+      <h1>The PV bike bus is <span>rolling</span></h1>
+      <p class="hero-sub">A group of neighborhood kids and grown-ups riding bikes to school together, on a set route, at a set time. Safer than riding alone, way more fun than the car line.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#join">Join the ride</a>
+        <a class="btn btn-ghost" href="#route">See the route</a>
       </div>
     </div>
-  </div>
-</section>
+  </header>
 
-<section class="block" id="route">
-  <div class="wrap">
-    <p class="kicker">The routes</p>
-    <h2>Pick the route closest to you</h2>
-    <p class="lead">Hop on at any stop along your route — you don't need to ride the whole thing to join in. (<a href="mailto:prospectvalley.bikebus@gmail.com?subject=PV%20Bike%20Bus%20Route%20Suggestion">Contact us</a> to request route additions or modifications!)</p>
+  <section class="block">
+    <div class="wrap">
+      <p class="kicker">What it is</p>
+      <h2>Just like a school bus - except everybody's rolling</h2>
+      <p class="lead">Riders join in along a fixed route at set stops, and we all ride in together as a group, led by volunteers. We've got morning commutes from every direction; pick one closest to you!</p>
+      <div class="grid-3">
+        <div class="card">
+          <p class="num">01</p>
+          <h3>Safety in numbers</h3>
+          <p>Riding as a visible group is safer than riding solo — drivers see us coming, and adult volunteers ride at the front and back.</p>
+        </div>
+        <div class="card">
+          <p class="num">02</p>
+          <h3>Skip the car line</h3>
+          <p>No idling, no parking scramble. Kids roll straight up to the bike rack, wide awake and ready for the day.</p>
+        </div>
+        <div class="card">
+          <p class="num">03</p>
+          <h3>Genuinely fun</h3>
+          <p>Music, bubbles, decorated bikes, and friends the whole way. Most kids ask to ride again the next day.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <div class="route-tabs" id="route-tabs"><!-- populated from ROUTES below --></div>
+  <section class="block" id="route">
+    <div class="wrap">
+      <p class="kicker">The routes</p>
+      <h2>Pick the route closest to you</h2>
+      <p class="lead">Hop on at any stop along your route — you don't need to ride the whole thing to join in. (<a href="mailto:prospectvalley.bikebus@gmail.com?subject=PV%20Bike%20Bus%20Route%20Suggestion">Contact us</a> to request route additions or modifications.)</p>
 
-    <div id="route-map" role="img" aria-label="Map of the bike bus routes and stops"></div>
+      <div class="route-tabs" id="route-tabs"></div>
+      <div id="route-map" role="img" aria-label="Map of the bike bus routes and stops"></div>
+      <div id="route-stops"></div>
+    </div>
+  </section>
 
-    <div id="route-stops"><!-- populated from ROUTES below --></div>
-  </div>
-</section>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script>
+    const UPCOMING_DATES = [
+      "2026-09-02",
+      "2026-09-16",
+      "2026-10-07",
+      "2026-10-21",
+      "2026-11-04",
+      "2026-11-18"
+    ];
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script>
-  // ---- EDIT THIS ARRAY for your upcoming bike dates ----
-  const UPCOMING_DATES = [
-    "2026-09-02",
-    "2026-09-16",
-    "2026-10-07",
-    "2026-10-21",
-    "2026-11-04",
-    "2026-11-18"
-  ]
-  // ---- EDIT THIS ARRAY to set your real routes and stops ----
-  // Add or remove route objects for however many routes you have (2-4 is typical).
-  // Coordinates below are placed around Prospect Valley Elementary, Wheat Ridge, CO.
-  // Fine-tune each one: right-click the real spot on Google Maps and
-  // click the coordinates at the top of the menu to copy the exact lat/lng.
-  const SCHOOL_IN_SITE_STOP = {
-    time: "7:32 AM",
-    title: "Stop 4 - 35th Ave and Parfet",
-    desc: "School is in sight - Join up with the other route. 👋 Hi there! ",
-    lat: 39.765552,
-    lng: -105.121453
-  }
-  const SCHOOL_FINAL_STOP = {
-    time: "7:35 AM",
-    title: "Final Stop - School bike rack",
-    desc: "Arrival with a few minutes to spare before the bell. 🫧 Bubble party! 🫧",
-    lat: 39.764474,
-    lng: -105.122768,
-    final: true
-  }
-  const SCHOOL_SOUTH_LOT_STOP = {
-    time: "7:33 AM",
-    title: "South parking lot",
-    desc: "Hop off and walk bike alongside the parking lot",
-    lat: 39.763860,
-    lng: -105.122474
-  }
-  const SOUTH_SPUR_PATH = [
-    [39.757242, -105.118857], // south side of bridge
-    [39.757515, -105.119008], // cross over the bridge
-    [39.758274, -105.119893], // 29th Ave and Oak
-    [39.758279, -105.122571], // 29th and Pierson Way
-    [39.758922, -105.122843], // along Pierson
-    [39.7592128, -105.1236057] // Quail and Pierson
-  ]
+    const SCHOOL_IN_SITE_STOP = {
+      time: "7:32 AM",
+      title: "Stop 4 - 35th Ave and Parfet",
+      desc: "School is in sight - Join up with the other route. 👋 Hi there! ",
+      lat: 39.765552,
+      lng: -105.121453
+    };
 
-  const south_route = {
-    id: "south",
-    name: "South Route",
-    color: "#0000FF", // blue
-    // path = every point the LINE passes through, in order — starts out
-    // matching the stops below. Add extra [lat, lng] points wherever the
-    // street bends by right-clicking that spot on Google Maps and copying
-    // the coordinates, so the line hugs the actual road instead of
-    // cutting straight across blocks.
-    path: [
-      ...SOUTH_SPUR_PATH.toReversed(), // duplicate over the spur path
-      ...SOUTH_SPUR_PATH,       // duplicate over the spur path
-      [39.756740, -105.123632], // Starting point
-      [39.761841, -105.123608], // Turn right at 32nd Ave
-      [39.761858, -105.122895], // Preparing to cross 32nd Ave
-      [39.761994, -105.122889], // Done crossing 32nd Ave
-      [39.761996, -105.122474], // Turn left
-      [39.763860, -105.122474], // Into the south parking lot
-      [39.764056, -105.122618], // School entrance
-      [39.764419, -105.122399], // School plaza
-      [39.764474, -105.122768]  // Final stop
-    ],
-    stops: [
-      {
-        time: "Depart @ 7:21 AM",
-        title: "Starting Point #1 - 27th Place and Quail",
-        desc: "",
-        lat: 39.756740,
-        lng: -105.123632,
-        start: true
-      },
-      {
-        time: "Depart @ 7:20 AM",
-        title: "Temporarily on pause! Starting Point #2 - Twilight Drive and Oak",
-        desc: "This spur is temporarily paused due to a bridge closure (<a href='https://www.wheatridge.gov/1956/Public-Works-Projects' target='_blank' rel='noopener noreferrer'>info here</a>). Please contact the City to express your interest in fixing this.",
-        lat: 39.757242, 
-        lng: -105.118857,
-        start: true
-      },
-      {
-        time: "7:22 AM",
-        title: "29th Ave and Quail",
-        desc: "Pause here briefly to join up with others!",
-        lat: 39.7592128, 
-        lng: -105.1236057
-      },
-      {
-        time: "7:24 AM",
-        title: "31st Ave and Quail",
-        desc: "Review the safety rules when crossing 32nd Ave",
-        lat: 39.761514,
-        lng: -105.123618
-      },
-      {
-        time: "7:28 AM",
-        title: "South parking lot",
-        desc: "Hop off and walk bike alongside the parking lot",
-        lat: 39.763860,
-        lng: -105.122474
-      },
-      {
-        time: "7:30 AM",
-        title: "Final Stop - School bike rack",
-        desc: "Arrival with a few minutes to spare before the bell. 🫧 Bubble party! 🫧",
-        lat: 39.764474,
-        lng: -105.122768,
-        final: true
-      }
-    ]
-  };
+    const SCHOOL_FINAL_STOP = {
+      time: "7:35 AM",
+      title: "Final Stop - School bike rack",
+      desc: "Arrival with a few minutes to spare before the bell. 🫧 Bubble party! 🫧",
+      lat: 39.764474,
+      lng: -105.122768,
+      final: true
+    };
 
-  const WEST_WARD_SPUR = [
-    [39.765460, -105.137793], // 35th Ave and Ward
-    [39.765591, -105.130600], // turn right on connector path
-    [39.765186, -105.130578], // before crossing the bridge
-    [39.764846, -105.130228]  // after crossing the bridge
-  ]
-  const WEST_SIMMS_SPUR = [
-    [39.769966, -105.127355], // 38th Place and Routt
-    [39.769151, -105.127351], // after crossing 38th Ave
-    [39.769055, -105.129071], // turn left on Simms
-    [39.766313, -105.129002], // along Simms
-    [39.765675, -105.128572], // turn right on 35th Ave
-    [39.765591, -105.130600], // turn left on connector path
-    [39.765186, -105.130578], // before crossing the bridge
-    [39.764846, -105.130228]  // after crossing the bridge
-  ]
-  const west_route = {
-    id: "west",
-    name: "West Route",
-    color: "#DAB1DA", // purple
-    // path = every point the LINE passes through, in order — starts out
-    // matching the stops below. Add extra [lat, lng] points wherever the
-    // street bends by right-clicking that spot on Google Maps and copying
-    // the coordinates, so the line hugs the actual road instead of
-    // cutting straight across blocks.
-    path: [
-      [39.762957, -105.133078], // Starting point #1
-      [39.764287, -105.132204], // park junction
-      [39.764698, -105.131520], // through the park
-      [39.764838, -105.130734], // exit the park at 34th
-      [39.764846, -105.130228], // bridge is to your left
-      ...WEST_WARD_SPUR.toReversed(), // duplicate over the spur path
-      ...WEST_WARD_SPUR,       // duplicate over the spur path
-      ...WEST_SIMMS_SPUR.toReversed(), // duplicate over the spur path
-      ...WEST_SIMMS_SPUR,       // duplicate over the spur path
-      [39.764838, -105.129659], // Entering the 34th Ave connector
-      [39.764798, -105.128563], // Exiting the 34th Ave connector
-      [39.761973, -105.128569], // 32nd Ave and Simms
-      [39.761986, -105.127117], // turn left on Routt
-      [39.763718, -105.127069], // Cul-de-sac Routt
-      [39.763788, -105.126454], // along connector path
-      [39.763680, -105.126060], // 33rd Ave and Robb
-      [39.763727, -105.123676], // School is in sight 33rd Ave and Quail
-      [39.763738, -105.122477], // crossing Quail
-      [39.763860, -105.122474], // Into the south parking lot
-      [39.764055, -105.122624], // school entrance
-      [39.764419, -105.122399], // School plaza
-      [39.764474, -105.122768]  // Final stop
-    ],
-    stops: [
-      {
-        time: "Depart @ 7:22 AM",
-        title: "Starting point #1 - 32nd Drive and Union (South Entrance Lewis Meadows)",
-        desc: "",
-        lat: 39.762957, 
-        lng: -105.133078,
-        start: true
-      },
-      {
-        time: "Depart @ 7:21 AM",
-        title: "Starting point #2 - 35th Ave and Ward",
-        desc: "",
-        lat: 39.765460, 
-        lng: -105.137793,
-        start: true
-      },
-      {
-        time: "Depart @ 7:19 AM",
-        title: "NEED VOLUNTEERS! - Starting point #3 - 38th Place and Routt",
-        desc: "",
-        lat: 39.769966,
-        lng: -105.127355,
-        start: true
-      },
-      {
-        time: "7:25 AM",
-        title: "34th Ave and Swadley",
-        desc: "The routes meetup! Everyone can gather before we take the connector path to Simms. ",
-        lat: 39.764838, 
-        lng: -105.129659
-      },
-      {
-        time: "7:29 AM",
-        title: "32nd Ave and Simms",
-        desc: "",
-        lat: 39.761973,
-        lng: -105.128569
-      },
-      {
-        time: "7:31 AM",
-        title: "Routt Street cul-de-sac",
-        desc: "Ready to take a connector path to Robb.",
-        lat: 39.763718,
-        lng: -105.127069
-      },
-      {
-        time: "7:32 AM",
-        title: "33rd Ave and Quail",
-        desc: "School is in site! Let's cross the street safely :)",
-        lat: 39.763727,
-        lng: -105.123676
-      },
-      SCHOOL_SOUTH_LOT_STOP,
-      SCHOOL_FINAL_STOP
-    ]
-  };
+    const SCHOOL_SOUTH_LOT_STOP = {
+      time: "7:33 AM",
+      title: "South parking lot",
+      desc: "Hop off and walk bike alongside the parking lot",
+      lat: 39.763860,
+      lng: -105.122474
+    };
 
-  const ROUTES = [
-    {
-      id: "east",
-      name: "East Route",
-      color: "#FF6A47", // coral
-      // path = every point the LINE passes through, in order — starts out
-      // matching the stops below. Add extra [lat, lng] points wherever the
-      // street bends by right-clicking that spot on Google Maps and copying
-      // the coordinates, so the line hugs the actual road instead of
-      // cutting straight across blocks.
+    const SOUTH_SPUR_PATH = [
+      [39.757242, -105.118857],
+      [39.757515, -105.119008],
+      [39.758274, -105.119893],
+      [39.758279, -105.122571],
+      [39.758922, -105.122843],
+      [39.7592128, -105.1236057]
+    ];
+
+    const south_route = {
+      id: "south",
+      name: "South Route",
+      color: "#0000FF",
       path: [
-        // [39.761760, -105.103509], // extended starting point; Crown Hill park at the High School
-        // [39.761913, -105.109497], // about to cross 32nd Ave
-        // [39.762117, -105.109490], // about to cross Kipling
-        // [39.762045, -105.113861], // 32nd and Miller
-        [39.762917, -105.114052], // 33rd and Miller
-        [39.765600, -105.115113], // Bottom of the hill Miller and 35th
-        [39.765660, -105.117782], // Stop 3 — 4-way Stop sign
-        [39.765552, -105.121453], // School is in sight
-        [39.764568, -105.121484], // School entrance
-        [39.764419, -105.122399], // School plaza
-        [39.764474, -105.122768]  // Final stop
+        ...SOUTH_SPUR_PATH.toReversed(),
+        ...SOUTH_SPUR_PATH,
+        [39.756740, -105.123632],
+        [39.761841, -105.123608],
+        [39.761858, -105.122895],
+        [39.761994, -105.122889],
+        [39.761996, -105.122474],
+        [39.763860, -105.122474],
+        [39.764056, -105.122618],
+        [39.764419, -105.122399],
+        [39.764474, -105.122768]
       ],
       stops: [
-      //   {
-      //     time: "Depart @ 7:18 AM",
-      //     title: "NEED VOLUNTEERS! - Starting point - Crown Hill Park",
-      //     desc: "NEED VOLUNTEERS! Potential extension to the East route if there are sufficient riders and volunteers. Until then, please meet at the '33rd Ave and Miller' Starting Point.",
-      //     lat: 39.761760, 
-      //     lng: -105.103509,
-      //     start: true
-      //   },
-        {
-          time: "Depart @ 7:25 AM",
-          title: "Starting point - 33rd Ave and Miller",
-          desc: "Gather here for the East route!",
-          lat: 39.762917, 
-          lng: -105.114052,
-          start: true
-        },
-        {
-          time: "7:28 AM",
-          title: "35th Ave and Miller",
-          desc: "Bottom of the hill - Please pause at the bottom of the hill to gather!",
-          lat: 39.765600,
-          lng: -105.115113
-        },
-        {
-          time: "7:30 AM",
-          title: "35th Ave and Nelson",
-          desc: "4-way Stop sign - Pause to check for vehicles and welcome joining riders!",
-          lat: 39.765660,
-          lng: -105.117782
-        },
-        SCHOOL_IN_SITE_STOP,
-        SCHOOL_FINAL_STOP
+        { time: "Depart @ 7:21 AM", title: "Starting Point #1 - 27th Place and Quail", desc: "", lat: 39.756740, lng: -105.123632, start: true },
+        { time: "Depart @ 7:20 AM", title: "Temporarily on pause! Starting Point #2 - Twilight Drive and Oak", desc: "This spur is temporarily paused due to a bridge closure. Please contact the City to express interest in fixing this.", lat: 39.757242, lng: -105.118857, start: true },
+        { time: "7:22 AM", title: "29th Ave and Quail", desc: "Pause here briefly to join up with others!", lat: 39.7592128, lng: -105.1236057 },
+        { time: "7:24 AM", title: "31st Ave and Quail", desc: "Review the safety rules when crossing 32nd Ave", lat: 39.761514, lng: -105.123618 },
+        { time: "7:28 AM", title: "South parking lot", desc: "Hop off and walk bike alongside the parking lot", lat: 39.763860, lng: -105.122474 },
+        { time: "7:30 AM", title: "Final Stop - School bike rack", desc: "Arrival with a few minutes to spare before the bell. 🫧 Bubble party! 🫧", lat: 39.764474, lng: -105.122768, final: true }
       ]
-    },
-    {
-      id: "north",
-      name: "North Route",
-      color: "#2E7D32", // green
+    };
+
+    const WEST_WARD_SPUR = [
+      [39.765460, -105.137793],
+      [39.765591, -105.130600],
+      [39.765186, -105.130578],
+      [39.764846, -105.130228]
+    ];
+
+    const WEST_SIMMS_SPUR = [
+      [39.769966, -105.127355],
+      [39.769151, -105.127351],
+      [39.769055, -105.129071],
+      [39.766313, -105.129002],
+      [39.765675, -105.128572],
+      [39.765591, -105.130600],
+      [39.765186, -105.130578],
+      [39.764846, -105.130228]
+    ];
+
+    const west_route = {
+      id: "west",
+      name: "West Route",
+      color: "#DAB1DA",
       path: [
-        [39.769547, -105.102523], // 38th Ave and Holland
-        [39.771464, -105.102544], // 39th Ave and Holland
-        [39.771432, -105.103762], // 39th Ave and Hoyt
-        [39.771160, -105.103833], // turn right on 39th Ave
-        [39.771156, -105.105491], // turn right on Independence Ct (optional)
-        [39.771088, -105.108802], // turn right on connector path
-        [39.771764, -105.108908], // turn left along connector path
-        [39.771222, -105.110167], // switchback
-        [39.771566, -105.109932], // along path
-        [39.771887, -105.110418], // safely cross through the parking lot!
-        [39.772901, -105.110410], // left turn along path
-        [39.772948, -105.110615], // right turn along path
-        [39.773420, -105.110623], // turn left on 41st Ave
-        [39.773408, -105.114416], // turn left onto connector path
-        [39.772936, -105.114423], // right turn along connector path
-        [39.772871, -105.119128], // 41st Ave and Oak
-        [39.770241, -105.119155], // Stop 2
-        [39.770165, -105.121477],
-        [39.769336, -105.121481], // Stop 3 - Stoplight
-        [39.765552, -105.121453], // School is in sight
-        [39.764568, -105.121484], // School entrance
-        [39.764419, -105.122399], // School plaza
-        [39.764474, -105.122768]  // Final stop
+        [39.762957, -105.133078],
+        [39.764287, -105.132204],
+        [39.764698, -105.131520],
+        [39.764838, -105.130734],
+        [39.764846, -105.130228],
+        ...WEST_WARD_SPUR.toReversed(),
+        ...WEST_WARD_SPUR,
+        ...WEST_SIMMS_SPUR.toReversed(),
+        ...WEST_SIMMS_SPUR,
+        [39.764838, -105.129659],
+        [39.764798, -105.128563],
+        [39.761973, -105.128569],
+        [39.761986, -105.127117],
+        [39.763718, -105.127069],
+        [39.763788, -105.126454],
+        [39.763680, -105.126060],
+        [39.763727, -105.123676],
+        [39.763738, -105.122477],
+        [39.763860, -105.122474],
+        [39.764055, -105.122624],
+        [39.764419, -105.122399],
+        [39.764474, -105.122768]
       ],
       stops: [
-        {
-          time: "Depart @ 7:12 AM",
-          title: "Starting point - 38th Ave and Holland",
-          desc: "Gathering for the East of Kipling.",
-          lat: 39.769547,
-          lng: -105.102523,
-          start: true
-        },
-        {
-          time: "7:15 AM",
-          title: "39th Ave and Independence Ct",
-          desc: "",
-          lat: 39.771156,
-          lng: -105.105491
-        },
-        {
-          time: "7:23 AM",
-          title: "41st Ave and Miller Ct",
-          desc: "",
-          lat: 39.772936,
-          lng: -105.115334
-        },
-        {
-          time: "Depart @ 7:25 AM",
-          title: "41st Ave and Oak",
-          desc: "Where the North route gathers before heading out.",
-          lat: 39.772871,
-          lng: -105.119128,
-          start: true
-        },
-        {
-          time: "7:27 AM",
-          title: "38th Place and Oak",
-          desc: "➡️ Turn right here.",
-          lat: 39.770241,
-          lng: -105.119155
-        },
-        {
-          time: "7:30 AM",
-          title: "38th Ave and Parfet",
-          desc: "38th Ave Stoplight - Gather here before crossing.",
-          lat: 39.769336,
-          lng: -105.121481
-        },
-        SCHOOL_IN_SITE_STOP,
+        { time: "Depart @ 7:22 AM", title: "Starting point #1 - 32nd Drive and Union (South Entrance Lewis Meadows)", desc: "", lat: 39.762957, lng: -105.133078, start: true },
+        { time: "Depart @ 7:21 AM", title: "Starting point #2 - 35th Ave and Ward", desc: "", lat: 39.765460, lng: -105.137793, start: true },
+        { time: "Depart @ 7:19 AM", title: "NEED VOLUNTEERS! - Starting point #3 - 38th Place and Routt", desc: "", lat: 39.769966, lng: -105.127355, start: true },
+        { time: "7:25 AM", title: "34th Ave and Swadley", desc: "The routes meetup! Everyone can gather before we take the connector path to Simms.", lat: 39.764838, lng: -105.129659 },
+        { time: "7:29 AM", title: "32nd Ave and Simms", desc: "", lat: 39.761973, lng: -105.128569 },
+        { time: "7:31 AM", title: "Routt Street cul-de-sac", desc: "Ready to take a connector path to Robb.", lat: 39.763718, lng: -105.127069 },
+        { time: "7:32 AM", title: "33rd Ave and Quail", desc: "School is in sight! Let's cross the street safely :)", lat: 39.763727, lng: -105.123676 },
+        SCHOOL_SOUTH_LOT_STOP,
         SCHOOL_FINAL_STOP
       ]
-    },
-    south_route,
-    west_route
-  ];
-  let currentRouteId = null;
+    };
 
-  // ---- Build tabs ----
-  const tabsEl = document.getElementById('route-tabs');
-  ROUTES.forEach((route, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'route-tab' + (i === 0 ? ' active' : '');
-    btn.dataset.routeId = route.id;
-    btn.innerHTML = `<span class="dot" style="background:${route.color}"></span>${route.name}`;
-    btn.addEventListener('click', () => selectRoute(route.id));
-    tabsEl.appendChild(btn);
-  });
+    const ROUTES = [
+      {
+        id: "east",
+        name: "East Route",
+        color: "#FF6A47",
+        path: [
+          [39.762917, -105.114052],
+          [39.765600, -105.115113],
+          [39.765660, -105.117782],
+          [39.765552, -105.121453],
+          [39.764568, -105.121484],
+          [39.764419, -105.122399],
+          [39.764474, -105.122768]
+        ],
+        stops: [
+          { time: "Depart @ 7:25 AM", title: "Starting point - 33rd Ave and Miller", desc: "Gather here for the East route!", lat: 39.762917, lng: -105.114052, start: true },
+          { time: "7:28 AM", title: "35th Ave and Miller", desc: "Bottom of the hill - Please pause at the bottom of the hill to gather!", lat: 39.765600, lng: -105.115113 },
+          { time: "7:30 AM", title: "35th Ave and Nelson", desc: "4-way Stop sign - Pause to check for vehicles and welcome joining riders!", lat: 39.765660, lng: -105.117782 },
+          SCHOOL_IN_SITE_STOP,
+          SCHOOL_FINAL_STOP
+        ]
+      },
+      {
+        id: "north",
+        name: "North Route",
+        color: "#2E7D32",
+        path: [
+          [39.769547, -105.102523],
+          [39.771464, -105.102544],
+          [39.771432, -105.103762],
+          [39.771160, -105.103833],
+          [39.771156, -105.105491],
+          [39.771088, -105.108802],
+          [39.771764, -105.108908],
+          [39.771222, -105.110167],
+          [39.771566, -105.109932],
+          [39.771887, -105.110418],
+          [39.772901, -105.110410],
+          [39.772948, -105.110615],
+          [39.773420, -105.110623],
+          [39.773408, -105.114416],
+          [39.772936, -105.114423],
+          [39.772871, -105.119128],
+          [39.770241, -105.119155],
+          [39.770165, -105.121477],
+          [39.769336, -105.121481],
+          [39.765552, -105.121453],
+          [39.764568, -105.121484],
+          [39.764419, -105.122399],
+          [39.764474, -105.122768]
+        ],
+        stops: [
+          { time: "Depart @ 7:12 AM", title: "Starting point - 38th Ave and Holland", desc: "Gathering for the East of Kipling.", lat: 39.769547, lng: -105.102523, start: true },
+          { time: "7:15 AM", title: "39th Ave and Independence Ct", desc: "", lat: 39.771156, lng: -105.105491 },
+          { time: "7:23 AM", title: "41st Ave and Miller Ct", desc: "", lat: 39.772936, lng: -105.115334 },
+          { time: "Depart @ 7:25 AM", title: "41st Ave and Oak", desc: "Where the North route gathers before heading out.", lat: 39.772871, lng: -105.119128, start: true },
+          { time: "7:27 AM", title: "38th Place and Oak", desc: "➡️ Turn right here.", lat: 39.770241, lng: -105.119155 },
+          { time: "7:30 AM", title: "38th Ave and Parfet", desc: "38th Ave Stoplight - Gather here before crossing.", lat: 39.769336, lng: -105.121481 },
+          SCHOOL_IN_SITE_STOP,
+          SCHOOL_FINAL_STOP
+        ]
+      },
+      south_route,
+      west_route
+    ];
 
-  // ---- Deep-link helpers ----
-  function getRouteIdFromHash() {
-    // Expect hash like "#route=east" or just "route=east"
-    const hash = (location.hash || '').replace(/^#/, '');
-    const params = new URLSearchParams(hash);
-    return params.get('route');
-  }
+    let currentRouteId = null;
 
-  function updateHashForRoute(routeId) {
-    const newHash = `route=${encodeURIComponent(routeId)}`; 
-    const target = `#${newHash}`;
-    // If already at the correct hash, do nothing. 
-    if (location.hash === target) 
-      return; 
-    try {
-      // Try to replace the url without adding a history entry. 
-      history.replaceState(null, '', target); 
-      // Some environments may not immediately reflect location.hash; ensure it matches. 
-      if (location.hash !== target) 
-        location.hash = newHash; 
-    } catch (e) { 
-      // Fallback — set the hash (this creates a history entry). 
-      location.hash = newHash;
+    const tabsEl = document.getElementById('route-tabs');
+    ROUTES.forEach((route, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'route-tab' + (i === 0 ? ' active' : '');
+      btn.dataset.routeId = route.id;
+      btn.innerHTML = `<span class="dot" style="background:${route.color}"></span>${route.name}`;
+      btn.addEventListener('click', () => selectRoute(route.id));
+      tabsEl.appendChild(btn);
+    });
+
+    function getRouteIdFromHash() {
+      const hash = (location.hash || '').replace(/^#/, '');
+      const params = new URLSearchParams(hash);
+      return params.get('route');
     }
-    console.log('newHash', newHash);
-  }
 
-  // If the user navigates back/forward or an external link changes the hash,
-  // respond by selecting the corresponding route.
-  window.addEventListener('hashchange', () => {
-    const routeId = getRouteIdFromHash();
-    if (routeId && ROUTES.find(r => r.id === routeId)) selectRoute(routeId);
-  });
+    function updateHashForRoute(routeId) {
+      const newHash = `route=${encodeURIComponent(routeId)}`;
+      const target = `#${newHash}`;
+      if (location.hash === target) return;
+      try {
+        history.replaceState(null, '', target);
+        if (location.hash !== target) location.hash = newHash;
+      } catch (e) {
+        location.hash = newHash;
+      }
+    }
 
-  // ---- Map setup ----
-  const map = L.map('route-map', { scrollWheelZoom: false });
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
+    window.addEventListener('hashchange', () => {
+      const routeId = getRouteIdFromHash();
+      if (routeId && ROUTES.find(r => r.id === routeId)) selectRoute(routeId);
+    });
 
-  // Draw every route's line + markers up front; store layers so we can
-  // dim/highlight them when a tab is clicked.
-  const routeLayers = {};
-  const allCoords = [];
-
-  ROUTES.forEach(route => {
-    // Line follows the detailed path (falls back to stop coords if no
-    // path is defined, so nothing breaks while you're filling this in).
-    const lineCoords = route.path && route.path.length ? route.path : route.stops.map(s => [s.lat, s.lng]);
-    const stopCoords = route.stops.map(s => [s.lat, s.lng]);
-    allCoords.push(...stopCoords);
-
-    const line = L.polyline(lineCoords, {
-      color: route.color,
-      weight: 4,
-      dashArray: '2, 10',
-      lineCap: 'round'
+    const map = L.map('route-map', { scrollWheelZoom: false });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    const markers = route.stops.map(stop => {
-      const icon = L.divIcon({
-        className: '',
-        html: `<div class="stop-marker${stop.final ? ' final' : ''}" style="background:${route.color}"></div>`,
-        iconSize: [stop.final ? 24 : 18, stop.final ? 24 : 18],
-        iconAnchor: [stop.final ? 12 : 9, stop.final ? 12 : 9]
+    const routeLayers = {};
+    const allCoords = [];
+
+    ROUTES.forEach(route => {
+      const lineCoords = route.path && route.path.length ? route.path : route.stops.map(s => [s.lat, s.lng]);
+      const stopCoords = route.stops.map(s => [s.lat, s.lng]);
+      allCoords.push(...stopCoords);
+
+      const line = L.polyline(lineCoords, {
+        color: route.color,
+        weight: 4,
+        dashArray: '2, 10',
+        lineCap: 'round'
+      }).addTo(map);
+
+      const markers = route.stops.map(stop => {
+        const markerClass = stop.final ? 'final' : (stop.start ? 'start' : '');
+        const icon = L.divIcon({
+          className: '',
+          html: `<div class="stop-marker ${markerClass}" style="background:${route.color}"></div>`,
+          iconSize: stop.final ? [28, 28] : (stop.start ? [20, 20] : [18, 18]),
+          iconAnchor: stop.final ? [14, 14] : (stop.start ? [10, 10] : [9, 9])
+        });
+        return L.marker([stop.lat, stop.lng], { icon })
+          .addTo(map)
+          .bindPopup(`
+            <span class="popup-time" style="color:${route.color}">${route.name} · ${stop.time}</span>
+            <span class="popup-title">${stop.title}</span>
+            <span class="popup-desc">${stop.desc}</span>
+          `);
       });
-      return L.marker([stop.lat, stop.lng], { icon })
-        .addTo(map)
-        .bindPopup(`
-          <span class="popup-time" style="color:${route.color}">${route.name} · ${stop.time}</span>
-          <span class="popup-title">${stop.title}</span>
-          <span class="popup-desc">${stop.desc}</span>
-        `);
+
+      routeLayers[route.id] = { line, markers, coords: stopCoords };
     });
 
-    routeLayers[route.id] = { line, markers, coords: stopCoords };
-  });
+    map.fitBounds(allCoords, { padding: [30, 30] });
 
-  map.fitBounds(allCoords, { padding: [30, 30] });
+    const stopsEl = document.getElementById('route-stops');
 
-  // ---- Timeline rendering ----
-  const stopsEl = document.getElementById('route-stops');
+    function renderTimeline(route) {
+      stopsEl.innerHTML = '';
 
-  function renderTimeline(route) {
-    stopsEl.innerHTML = '';
+      const heading = document.createElement('div');
+      heading.className = 'route-heading';
+      heading.innerHTML = `<span class="dot" style="background:${route.color}"></span><h3>${route.name}</h3>`;
+      stopsEl.appendChild(heading);
 
-    const heading = document.createElement('div');
-    heading.className = 'route-heading';
-    heading.innerHTML = `<span class="dot" style="background:${route.color}"></span><h3>${route.name}</h3>`;
-    stopsEl.appendChild(heading);
+      const list = document.createElement('div');
+      list.className = 'route';
+      route.stops.forEach(stop => {
+        const el = document.createElement('div');
+        el.className = 'stop' + (stop.final ? ' final' : '');
+        el.innerHTML = `
+          <p class="stop-time mono" style="color:${route.color}">${stop.time}</p>
+          <h3>${stop.title}</h3>
+          <p>${stop.desc}</p>
+        `;
+        list.appendChild(el);
+      });
+      stopsEl.appendChild(list);
+    }
 
-    const list = document.createElement('div');
-    list.className = 'route';
-    route.stops.forEach(stop => {
-      const el = document.createElement('div');
-      el.className = 'stop' + (stop.final ? ' final' : '');
-      el.innerHTML = `
-        <p class="stop-time mono" style="color:${route.color}">${stop.time}</p>
-        <h3>${stop.title}</h3>
-        <p>${stop.desc}</p>
-      `;
-      list.appendChild(el);
-    });
-    stopsEl.appendChild(list);
-  }
+    function selectRoute(routeId) {
+      if (routeId === currentRouteId) return;
 
-// ---- Selecting a route: highlight its line/markers, fade the rest ----
-function selectRoute(routeId) {
-  if (routeId === currentRouteId) return;
+      ROUTES.forEach(route => {
+        const isActive = route.id === routeId;
+        const layer = routeLayers[route.id];
+        if (layer) {
+          layer.line.setStyle({ opacity: isActive ? 1 : 0.25, weight: isActive ? 5 : 3 });
+          layer.markers.forEach(marker => {
+            const el = marker.getElement();
+            if (el) {
+              el.style.opacity = isActive ? '1' : '0.35';
+              el.style.pointerEvents = isActive ? 'auto' : 'none';
+            }
+          });
+        }
+      });
 
-  
-  ROUTES.forEach(route => {
-    const isActive = route.id === routeId;
-    const layers = routeLayers[route.id];
+      document.querySelectorAll('.route-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.routeId === routeId);
+      });
 
-    // style the polyline
-    layers.line.setStyle({ opacity: isActive ? 1 : 0.25, weight: isActive ? 5 : 3 });
-
-    // markers: dim inactive ones, make them non-interactive; raise active ones
-    layers.markers.forEach(m => {
-      const el = m.getElement();
-      if (el) {
-        el.style.opacity = isActive ? 1 : 0.35;
-        el.style.pointerEvents = isActive ? 'auto' : 'none'; // <-- prevents clicks on inactive markers
+      const route = ROUTES.find(r => r.id === routeId);
+      renderTimeline(route);
+      if (routeLayers[routeId] && routeLayers[routeId].coords.length) {
+        map.fitBounds(routeLayers[routeId].coords, { padding: [40, 40] });
       }
-      // visually bring active markers to front
-      m.setZIndexOffset(isActive ? 1000 : 0);
-    });
-  });
+      updateHashForRoute(routeId);
+      currentRouteId = routeId;
+    }
 
-  // update tab UI
-  document.querySelectorAll('.route-tab').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.routeId === routeId);
-  });
+    const initialRouteId = getRouteIdFromHash();
+    if (initialRouteId && ROUTES.find(r => r.id === initialRouteId)) {
+      selectRoute(initialRouteId);
+    } else {
+      selectRoute(ROUTES[0].id);
+    }
+  </script>
 
-  const route = ROUTES.find(r => r.id === routeId);
-  renderTimeline(route);
-
-  if (routeLayers[routeId].coords.length) {
-    map.fitBounds(routeLayers[routeId].coords, { padding: [40, 40] });
-  }
-
-  // Update the URL hash for deep-linking/sharing
-  updateHashForRoute(routeId);
-  map.closePopup();
-  
-  currentRouteId = routeId;
-}
-
-  // Start with the route from the hash if present, otherwise first route
-  const initialRouteId = getRouteIdFromHash();
-  if (initialRouteId && ROUTES.find(r => r.id === initialRouteId)) {
-    selectRoute(initialRouteId);
-  } else {
-    selectRoute(ROUTES[0].id);
-  }
-
-  /* Upcoming rides list */
-  document.addEventListener('DOMContentLoaded', function () {
-    const container = document.getElementById('upcoming-dates');
-    if (!container) return;
-
-    const tableBody = document.querySelector('#upcoming-dates tbody');
-    tableBody.innerHTML = '';
-
-    UPCOMING_DATES.forEach(dateStr => {
-      const row = document.createElement('tr');
-      const dateCell = document.createElement('td');
-      
-      dateCell.textContent = dateStr
-
-      row.appendChild(dateCell);
-      tableBody.appendChild(row);
-    });
-  });
-</script>
-
-<section class="block">
-  <div class="wrap">
-    <p class="kicker">What we bring</p>
-    <h2>Everyone's kept visible and rolling smoothly</h2>
-    <p class="lead">Every rider gets safety gear for the ride. Extra items on hand keep things running and fun.</p>
-    <div class="grid-4">
-      <div class="gear-item"><span class="mono">Safety</span><strong>Hi-vis vests</strong></div>
-      <div class="gear-item"><span class="mono">Safety</span><strong>Bike lights</strong></div>
-      <div class="gear-item"><span class="mono">On route</span><strong>Route markers</strong></div>
-      <div class="gear-item"><span class="mono">On route</span><strong>Shared tool &amp; patch kit</strong></div>
-      <div class="gear-item"><span class="mono">Morale</span><strong>Bluetooth speaker</strong></div>
-      <div class="gear-item"><span class="mono">Morale</span><strong>Bubble machine</strong></div>
-      <div class="gear-item"><span class="mono">Morale</span><strong>Milestone stickers</strong></div>
-      <div class="gear-item"><span class="mono">Morale</span><strong>Decorated bikes</strong></div>
+  <section class="block">
+    <div class="wrap">
+      <p class="kicker">What we bring</p>
+      <h2>Everybody's kept visible and rolling smoothly</h2>
+      <p class="lead">Every rider gets safety gear for the ride. Extra items on hand keep things running and fun.</p>
+      <div class="grid-4">
+        <div class="gear-item"><span class="mono">Safety</span><strong>Hi-vis vests</strong></div>
+        <div class="gear-item"><span class="mono">Safety</span><strong>Bike lights</strong></div>
+        <div class="gear-item"><span class="mono">On route</span><strong>Route markers</strong></div>
+        <div class="gear-item"><span class="mono">On route</span><strong>Shared tool &amp; patch kit</strong></div>
+        <div class="gear-item"><span class="mono">Morale</span><strong>Bluetooth speaker</strong></div>
+        <div class="gear-item"><span class="mono">Morale</span><strong>Bubbles machine</strong></div>
+        <div class="gear-item"><span class="mono">Morale</span><strong>Milestone stickers</strong></div>
+        <div class="gear-item"><span class="mono">Morale</span><strong>Decorated bikes</strong></div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="block">
-  <div class="wrap">
-    <p class="kicker">Questions</p>
-    <h2>Good to know before your first ride</h2>
-    <details open>
-      <summary>Is there a waiver?</summary>
-      <p>By choosing to participate in the Bike Bus, you agree to our <a href="https://pvbikebus.github.io/waiver/">terms and liability waiver.</a></p>
-    </details>
-    <details>
-      <summary>What are the rules?</summary>
-      <p>Please review our <a href="https://pvbikebus.github.io/rules-of-the-road/">rules of the road.</a></p>
-    </details>
-    <details>
-      <summary>Do we have to ride the whole route?</summary>
-      <p>No - join at whichever stop is closest to your house and ride the rest of the way with the group.</p>
-    </details>
-    <details>
-      <summary>What if it's raining/snowing?</summary>
-      <p>We ride rain or shine; slippery conditions excepted. Watch the group email for updates.</p>
-    </details>
-    <details>
-      <summary>Does a grown-up need to ride with my kid?</summary>
-      <p>All ages are welcome! However, K-1st graders need a parent/guardian accompanying them. Guardians are welcome but not required for older riders.</p>
-    </details>
-    <details>
-      <summary>What about the way back home?</summary>
-      <p>Given that school departure times vary more than arrival times, it's harder to coordinate a ride back home. We're starting off with morning rides only. However, if there is enough interest for a shared departure time + route, we'll be happy to map it and make it official! Please <a href="mailto:prospectvalley.bikebus@gmail.com?subject=PV%20Bike%20Bus%20Afternoon%20Ride">contact us</a> if interested.</p>
-    </details>
-    <details>
-      <summary>How do I volunteer?</summary>
-      <p>We always need extra adults riding front, middle, and back. <a href="mailto:prospectvalley.bikebus@gmail.com?subject=PV%20Bike%20Bus%20Sign-up">Email to join</a>. 
-        No experience needed — just a bike, a helmet, and a hi-vis vest (we've got spares).</p>
-    </details>
-  </div>
-</section>
-  
-<section class="block join" id="join">
-  <div class="wrap">
-    <p class="kicker">Join in</p>
-    <h2>Get the details before your first ride</h2>
-    <p class="lead">Reach out and we'll add you to the group chat with route updates, meeting times, and day-of changes.</p>
-    <div class="join-box">
-      <div class="row"><span>Contact</span><span>prospectvalley.bikebus@gmail.com</span></div>
-      <div class="row"><span>Rides on</span><span>1st & 3rd Wednesday mornings</span></div>
-      <div class="row"><span>Final stop @ school</span><span>7:35 AM</span></div>
-      <div class="row"><span>Upcoming rides</span><span>Sept 2nd, Sept 16th, Oct 7th, Oct 21st</span></div>
+  <section class="block">
+    <div class="wrap">
+      <p class="kicker">Questions</p>
+      <h2>Good to know before your first ride</h2>
+      <details open>
+        <summary>Is there a waiver?</summary>
+        <p>By choosing to participate in the Bike Bus, you agree to our <a href="https://pvbikebus.github.io/waiver/">terms and liability waiver.</a></p>
+      </details>
+      <details>
+        <summary>What are the rules?</summary>
+        <p>Please review our <a href="https://pvbikebus.github.io/rules-of-the-road/">rules of the road.</a></p>
+      </details>
+      <details>
+        <summary>Do we have to ride the whole route?</summary>
+        <p>No — join at whichever stop is closest to your house and ride the rest of the way with the group.</p>
+      </details>
+      <details>
+        <summary>What if it's raining/snowing?</summary>
+        <p>We ride rain or shine; slippery conditions excepted. Watch the group email for updates.</p>
+      </details>
+      <details>
+        <summary>Does a grown-up need to ride with my kid?</summary>
+        <p>All ages are welcome! However, K-1st graders need a parent/guardian accompanying them. Guardians are welcome but not required for older riders.</p>
+      </details>
     </div>
-    <div class="cta-row" style="margin-top:28px;">
-      <a class="btn btn-primary" href="mailto:prospectvalley.bikebus@gmail.com?subject=PV%20Bike%20Bus%20Sign-up">Email to join</a>
-    </div>
-  </div>
-</section>
+  </section>
 
-<section class="block">
-<footer>
-  <div class="wrap">
-    <p class="mono">© Prospect Valley Bike Bus</p>
-    <p style="margin-top:8px;font-size:13px;color:var(--ink-soft);">By participating in Prospect Valley Bike Bus, you agree to our <a href="https://pvbikebus.github.io/waiver/">RELEASE OF LIABILITY, WAIVER OF CLAIMS,  ASSUMPTION OF RISK & INDEMNITY</a></p>
-  </div>
-</footer>
+  <section class="block join" id="join">
+    <div class="wrap">
+      <p class="kicker">Join in</p>
+      <h2>Get the details before your first ride</h2>
+      <p class="lead">Reach out and we'll add you to the group chat with route updates, meeting times, and day-of changes.</p>
+      <div class="join-box">
+        <div class="row"><span>Contact</span><span>prospectvalley.bikebus@gmail.com</span></div>
+        <div class="row"><span>Rides on</span><span>1st &amp; 3rd Wednesday mornings</span></div>
+        <div class="row"><span>Final stop @ school</span><span>7:35 AM</span></div>
+        <div class="row"><span>Upcoming rides</span><span>Sept 2nd, Sept 16th, Oct 7th, Oct 21st</span></div>
+      </div>
+      <div class="cta-row" style="margin-top: 28px;">
+        <a class="btn btn-primary" href="mailto:prospectvalley.bikebus@gmail.com?subject=PV%20Bike%20Bus%20Sign-up">Email to join</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <p class="mono">© Prospect Valley Bike Bus</p>
+      <p style="margin-top:8px;font-size:13px;color:var(--ink-soft);">By participating in Prospect Valley Bike Bus, you agree to our <a href="https://pvbikebus.github.io/waiver/">RELEASE OF LIABILITY, WAIVER OF CLAIMS, ASSUMPTION OF RISK &amp; INDEMNITY</a>.</p>
+    </div>
+  </footer>
 </body>
 </html>
