@@ -329,9 +329,11 @@
 
     .stop-marker.start {
       width: 24px;
-      height: 24px;
+      height: 30px;
+      border: 3px solid var(--ink);
       border-radius: 50% 50% 50% 0;
       transform: rotate(-45deg);
+      box-sizing: border-box;
     }
 
     .stop-marker.start::after {
@@ -339,8 +341,8 @@
       position: absolute;
       width: 7px;
       height: 7px;
-      top: 5px;
-      left: 5px;
+      top: 6px;
+      left: 6px;
       border-radius: 50%;
       background: var(--paper);
     }
@@ -885,14 +887,23 @@
       }).addTo(map);
 
       const markers = route.stops.map(stop => {
-        const markerClass = stop.final ? 'final' : (stop.start ? 'start' : '');
-        const markerSize = stop.final ? 30 : (stop.start ? 24 : 18);
+        const markerClass = stop.final
+          ? 'final'
+          : (stop.start ? 'start' : '');
+
+        const iconSize = stop.final
+          ? [30, 30]
+          : (stop.start ? [24, 30] : [18, 18]);
+
+        const iconAnchor = stop.final
+          ? [15, 15]
+          : (stop.start ? [12, 30] : [9, 9]);
 
         const icon = L.divIcon({
           className: '',
           html: `<div class="stop-marker ${markerClass}" style="background:${route.color}"></div>`,
-          iconSize: [markerSize, markerSize],
-          iconAnchor: [markerSize / 2, markerSize / 2]
+          iconSize,
+          iconAnchor
         });
         return L.marker([stop.lat, stop.lng], { icon })
           .addTo(map)
