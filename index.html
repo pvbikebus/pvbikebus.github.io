@@ -320,28 +320,46 @@
     }
 
     .stop-marker {
-      border: 3px solid var(--ink);
-      border-radius: 50%;
+      position: relative;
       width: 18px;
       height: 18px;
-      box-sizing: border-box;
-      position: relative;
-      background: var(--hivis);
+      border: 3px solid var(--ink);
+      border-radius: 50%;
     }
 
     .stop-marker.start {
-      width: 20px;
-      height: 20px;
-      border-radius: 6px;
-      transform: rotate(45deg);
-      box-shadow: 0 0 0 3px rgba(28,43,36,0.2);
+      width: 24px;
+      height: 24px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+    }
+
+    .stop-marker.start::after {
+      content: "";
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      top: 5px;
+      left: 5px;
+      border-radius: 50%;
+      background: var(--paper);
     }
 
     .stop-marker.final {
-      width: 28px;
-      height: 28px;
-      border-width: 4px;
-      box-shadow: 0 0 0 3px rgba(28,43,36,0.15);
+      width: 30px;
+      height: 30px;
+      border: 3px solid var(--ink);
+      border-radius: 4px;
+    }
+
+    .stop-marker.final::before {
+      content: "🏫";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      transform: rotate(0deg);
     }
 
     .route {
@@ -868,11 +886,13 @@
 
       const markers = route.stops.map(stop => {
         const markerClass = stop.final ? 'final' : (stop.start ? 'start' : '');
+        const markerSize = stop.final ? 30 : (stop.start ? 24 : 18);
+
         const icon = L.divIcon({
           className: '',
           html: `<div class="stop-marker ${markerClass}" style="background:${route.color}"></div>`,
-          iconSize: stop.final ? [28, 28] : (stop.start ? [20, 20] : [18, 18]),
-          iconAnchor: stop.final ? [14, 14] : (stop.start ? [10, 10] : [9, 9])
+          iconSize: [markerSize, markerSize],
+          iconAnchor: [markerSize / 2, markerSize / 2]
         });
         return L.marker([stop.lat, stop.lng], { icon })
           .addTo(map)
