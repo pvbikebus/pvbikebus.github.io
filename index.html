@@ -328,12 +328,16 @@
     }
 
     .stop-marker.start {
+      position: absolute;
+      top: 5px;
+      left: 5px;
       width: 24px;
-      height: 30px;
+      height: 24px;
+      box-sizing: border-box;
       border: 3px solid var(--ink);
       border-radius: 50% 50% 50% 0;
       transform: rotate(-45deg);
-      box-sizing: border-box;
+      box-shadow: none;
     }
 
     .stop-marker.start::after {
@@ -345,6 +349,7 @@
       left: 6px;
       border-radius: 50%;
       background: var(--paper);
+      transform: rotate(45deg);
     }
 
     .stop-marker.final {
@@ -893,11 +898,11 @@
 
         const iconSize = stop.final
           ? [30, 30]
-          : (stop.start ? [24, 30] : [18, 18]);
+          : (stop.start ? [34, 34] : [18, 18]);
 
         const iconAnchor = stop.final
           ? [15, 15]
-          : (stop.start ? [12, 30] : [9, 9]);
+          : (stop.start ? [17, 29] : [9, 9]);
 
         const icon = L.divIcon({
           className: '',
